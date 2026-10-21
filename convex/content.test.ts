@@ -21,7 +21,8 @@ async function createActor(email: string) {
 }
 const product = {section:'products',slug:'test-product',title:'Test kit',data:{price:12000,category:'jerseys'},published:false,sort:0};
 
-const googleIdentity={issuer:'https://securetoken.google.com/alrajja-club-auth',subject:'google-customer',email:'alrajja28@gmail.com',emailVerified:true,firebase:{sign_in_provider:'google.com'}};
+// Convex exposes nested JWT claims as dotted keys, unlike the raw Firebase JWT.
+const googleIdentity={issuer:'https://securetoken.google.com/alrajja-club-auth',subject:'google-customer',email:'alrajja28@gmail.com',emailVerified:true,'firebase.sign_in_provider':'google.com'};
 describe('Firebase Google identity boundary',()=>{
   it('creates a single profile for a verified Google identity',async()=>{
     const t=convexTest(schema,modules),actor=t.withIdentity(googleIdentity);
@@ -31,7 +32,7 @@ describe('Firebase Google identity boundary',()=>{
   });
   it('rejects unverified mail, another issuer, and non-Google sign-in',async()=>{
     const t=convexTest(schema,modules);
-    for(const change of [{emailVerified:false},{issuer:'https://securetoken.google.com/another-project'},{firebase:{sign_in_provider:'password'}}]){
+    for(const change of [{emailVerified:false},{issuer:'https://securetoken.google.com/another-project'},{'firebase.sign_in_provider':'password'},{'firebase.sign_in_provider':undefined}]){
       const actor=t.withIdentity({...googleIdentity,...change});
       await expect(actor.mutation(api.identity.ensureUser,{})).rejects.toThrow('Google');
       expect(await actor.query(api.content.me,{})).toBeNull();
