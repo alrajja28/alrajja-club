@@ -164,20 +164,6 @@ export default function App() {
         return;
       }
 
-      // Handle "تفاصيل المباراة" button click
-      const btn = target.closest('button');
-      if (btn && btn.textContent?.includes('تفاصيل المباراة')) {
-        e.preventDefault();
-        switchScreen('matches-screen');
-        return;
-      }
-
-      // Handle "شراء التذاكر" button click
-      if (btn && btn.textContent?.includes('شراء التذاكر')) {
-        e.preventDefault();
-        switchScreen('tickets-screen');
-        return;
-      }
     };
 
     document.addEventListener('click', handleGlobalClick);
