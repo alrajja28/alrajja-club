@@ -1,0 +1,555 @@
+{
+  "products": [
+    {
+      "id": "prod-1",
+      "title": "تيشرت أساسي 2026",
+      "category": "jerseys",
+      "price": 35000,
+      "image": "https://images.unsplash.com/photo-1577212017184-80cc0da11082?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "prod-2",
+      "title": "تيشرت احتياطي 2026",
+      "category": "jerseys",
+      "price": 35000,
+      "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "prod-3",
+      "title": "تيشرت تمرين",
+      "category": "training",
+      "price": 25000,
+      "image": "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "prod-4",
+      "title": "شورت النادي",
+      "category": "training",
+      "price": 15000,
+      "image": "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "prod-5",
+      "title": "قبعة النادي",
+      "category": "accessories",
+      "price": 10000,
+      "image": "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "prod-6",
+      "title": "شال النادي",
+      "category": "accessories",
+      "price": 12000,
+      "image": "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=400&q=80"
+    }
+  ],
+  "news": [
+    {
+      "id": "news-1",
+      "category": "أخبار",
+      "title": "مدرب الرجاء العراقي: جاهزون للمباراة القادمة ونسعى لتحقيق الفوز",
+      "date": "2026/09/20",
+      "views": "1.2K",
+      "likes": 92,
+      "liked": false,
+      "image": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
+      "imageAlt": "خبر مدرب الرجاء العراقي",
+      "content": "أكد المدير الفني لنادي الرجاء العراقي في المؤتمر الصحفي التقديمي لمباراة الفريق القادمة جاهزية جميع اللاعبين لخوض اللقاء. وأوضح المدرب أن المعنويات عالية وأن الفريق تدرب بحماس وتركيز كامل لحصد النقاط الثلاث وإسعاد جماهير فرسان الرافدين."
+    },
+    {
+      "id": "news-2",
+      "category": "أخبار",
+      "title": "تدريبات الفريق استعداداً لمواجهة الدوري",
+      "date": "2026/09/19",
+      "views": "856",
+      "likes": 64,
+      "liked": false,
+      "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80",
+      "imageAlt": "تدريبات الفريق",
+      "content": "أجرى الفريق الأول لكرة القدم بنادي الرجاء العراقي حصة تدريبية مكثفة مساء اليوم على الملعب الرئيسي، واشتمل المران على تدريبات تكتيكية وبدنية خاصة وتطبيق خطة اللعب للمواجهة المرتقبة."
+    },
+    {
+      "id": "news-3",
+      "category": "أخبار",
+      "title": "إدارة النادي تعلن عن تصميم الزي الجديد",
+      "date": "2026/09/18",
+      "views": "620",
+      "isCompact": true,
+      "content": "كشفت إدارة نادي الرجاء العراقي رسمياً عن الطقم الأساسي والاحتياطي للموسم الرياضي 2026-2025 بتصميم عصري يمزج بين ألوان النادي التاريخية والتفاصيل الذهبية المستوحاة من درع البطولة."
+    },
+    {
+      "id": "news-4",
+      "category": "أخبار",
+      "title": "صور من تدريبات الفريق اليوم",
+      "date": "2026/09/18",
+      "views": "1.1K",
+      "isCompact": true,
+      "content": "شهدت تدريبات الفريق الأول أجواء إيجابية وروحاً قتالية عالية وسط حضور إداري وجماهيري لدعم اللاعبين قبل الجولة القادمة."
+    },
+    {
+      "id": "news-5",
+      "category": "تقارير",
+      "title": "تقرير فني: قراءة تحليلية لنقاط قوة منافس الرجاء العراقي قبل اللقاء",
+      "date": "2026/09/17",
+      "views": "940",
+      "likes": 45,
+      "liked": false,
+      "image": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=800&q=80",
+      "imageAlt": "تقرير فني",
+      "content": "يستعرض التقرير أبرز نقاط القوة والضعف في التشكيلة المنافسة وطريقة بناء الهجمات، وكيف يخطط الجهاز الفني لنادي الرجاء العراقي لفرض أسلوبه الهجومي منذ الدقائق الأولى."
+    },
+    {
+      "id": "news-6",
+      "category": "تقارير",
+      "title": "إحصائيات: هجوم الرجاء العراقي الأقوى في الجولات الافتتاحية للموسم",
+      "date": "2026/09/16",
+      "views": "730",
+      "isCompact": true,
+      "content": "أظهرت إحصائيات دوري نجوم العراق تفوق خط هجوم الرجاء العراقي كأكثر الفرق تسجيلاً وصناعة للفرص المحققة بنسبة نجاح بلغت 78%."
+    },
+    {
+      "id": "news-7",
+      "category": "تصريحات",
+      "title": "كابتن الفريق: نعد جماهيرنا بتقديم كل ما نملك على أرضية الملعب",
+      "date": "2026/09/18",
+      "views": "1.4K",
+      "likes": 110,
+      "liked": false,
+      "image": "https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=800&q=80",
+      "imageAlt": "تصريح كابتن الفريق",
+      "content": "في حديث خاص للمركز الإعلامي، وجه قائد الفريق رسالة شكر لجمهور الرجاء العراقي مؤكداً أن دعمهم في المدرجات هو الوقود الحقيقي لتحقيق الانتصارات المتتالية."
+    },
+    {
+      "id": "news-8",
+      "category": "تصريحات",
+      "title": "رئيس شركة الكرة: الاستقرار الفني والإداري هو سر تطور الفريق",
+      "date": "2026/09/15",
+      "views": "880",
+      "isCompact": true,
+      "content": "ثمّن رئيس شركة كرة القدم جهود الجهازين الفني والإداري واللاعبين، مشيداً بالانضباط والعمل الجماعي المتواصل في سبيل رفعة اسم النادي."
+    },
+    {
+      "id": "news-9",
+      "category": "صور",
+      "title": "ألبوم صور: الحصة التدريبية المسائية ومدرجات أصحاب السعادة",
+      "date": "2026/09/19",
+      "views": "2.3K",
+      "likes": 185,
+      "liked": false,
+      "image": "https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?auto=format&fit=crop&w=800&q=80",
+      "imageAlt": "ألبوم صور المدرجات",
+      "content": "مجموعة حصرية من لقطات الكاميرا الخاصة بالنادي ترصد حماس اللاعبين وهتافات المشجعين في مدرجات التدريب المفتوحة."
+    },
+    {
+      "id": "news-10",
+      "category": "فيديو",
+      "title": "فيديو: ملخص وأهداف آخر مواجهات الرجاء العراقي والأجواء الحماسية",
+      "date": "2026/09/17",
+      "views": "3.5K",
+      "likes": 240,
+      "liked": false,
+      "image": "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=800&q=80",
+      "imageAlt": "فيديو الملخص",
+      "content": "شاهد بالفيديو أبرز لقطات الفوز والأهداف الرائعة وردود أفعال المدرج الوحداوي بعد إطلاق صافرة النهاية."
+    }
+  ],
+  "players": [
+    {
+      "id": "p1",
+      "name": "موسى إياد",
+      "number": 1,
+      "position": "حراس",
+      "posName": "حارس مرمى",
+      "imgUrl": "https://images.unsplash.com/photo-1570498839593-e565b3d4f6fe?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 26,
+      "matches": 18,
+      "cleanSheets": 7,
+      "height": "189 سم"
+    },
+    {
+      "id": "p2",
+      "name": "أحمد ماجد",
+      "number": 2,
+      "position": "دفاع",
+      "posName": "دفاع",
+      "imgUrl": "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 24,
+      "matches": 21,
+      "goals": 1,
+      "assists": 2,
+      "height": "182 سم"
+    },
+    {
+      "id": "p3",
+      "name": "علي",
+      "number": 4,
+      "position": "دفاع",
+      "posName": "دفاع",
+      "imgUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 25,
+      "matches": 19,
+      "goals": 0,
+      "assists": 1,
+      "height": "185 سم"
+    },
+    {
+      "id": "p4",
+      "name": "عباس",
+      "number": 5,
+      "position": "دفاع",
+      "posName": "دفاع",
+      "imgUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 27,
+      "matches": 22,
+      "goals": 2,
+      "assists": 0,
+      "height": "187 سم"
+    },
+    {
+      "id": "p5",
+      "name": "عبدالله حبيب",
+      "number": 7,
+      "position": "وسط",
+      "posName": "وسط",
+      "imgUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 22,
+      "matches": 12,
+      "goals": 4,
+      "assists": 7,
+      "height": "178 سم",
+      "weight": "72 كجم",
+      "yellowCards": 2,
+      "rating": "7.6"
+    },
+    {
+      "id": "p6",
+      "name": "أمير علي",
+      "number": 8,
+      "position": "وسط",
+      "posName": "وسط",
+      "imgUrl": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 22,
+      "matches": 17,
+      "goals": 3,
+      "assists": 4,
+      "height": "176 سم"
+    },
+    {
+      "id": "p7",
+      "name": "منتظر رحيم",
+      "number": 10,
+      "position": "هجوم",
+      "posName": "هجوم",
+      "imgUrl": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 24,
+      "matches": 23,
+      "goals": 11,
+      "assists": 5,
+      "height": "181 سم"
+    },
+    {
+      "id": "p8",
+      "name": "سجاد وسام",
+      "number": 12,
+      "position": "وسط",
+      "posName": "وسط",
+      "imgUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80",
+      "nationality": "العراق",
+      "age": 21,
+      "matches": 15,
+      "goals": 2,
+      "assists": 3,
+      "height": "174 سم"
+    },
+    {
+      "id": "p9",
+      "name": "عمر خربين",
+      "number": 70,
+      "position": "هجوم",
+      "posName": "هجوم",
+      "imgUrl": "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300&auto=format&fit=crop&q=80",
+      "nationality": "سوريا",
+      "age": 30,
+      "matches": 24,
+      "goals": 17,
+      "assists": 7,
+      "height": "183 سم"
+    },
+    {
+      "id": "p10",
+      "name": "أحمد نور الله",
+      "number": 88,
+      "position": "وسط",
+      "posName": "وسط",
+      "imgUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80",
+      "nationality": "إيران",
+      "age": 31,
+      "matches": 23,
+      "goals": 6,
+      "assists": 9,
+      "height": "184 سم"
+    },
+    {
+      "id": "p11",
+      "name": "محمد الشامسي",
+      "number": 22,
+      "position": "حراس",
+      "posName": "حارس مرمى",
+      "imgUrl": "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?w=300&auto=format&fit=crop&q=80",
+      "nationality": "الإمارات",
+      "age": 28,
+      "matches": 20,
+      "cleanSheets": 9,
+      "height": "188 سم"
+    },
+    {
+      "id": "p12",
+      "name": "سيباستيان تيجالي",
+      "number": 11,
+      "position": "هجوم",
+      "posName": "هجوم",
+      "imgUrl": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&auto=format&fit=crop&q=80",
+      "nationality": "الإمارات",
+      "age": 34,
+      "matches": 16,
+      "goals": 9,
+      "assists": 3,
+      "height": "182 سم"
+    }
+  ],
+  "media": [
+    {
+      "id": "m-1",
+      "title": "صور المباراة",
+      "alt": "صور المباراة",
+      "type": "photo",
+      "category": "matches",
+      "badgeType": "photo",
+      "badgeValue": "18",
+      "imgSrc": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=500&auto=format&fit=crop",
+      "description": "ألبوم حصري يوثق أحداث مواجهة نادي الرجاء العراقي ولحظات الاحتفال.",
+      "date": "2026/09/25"
+    },
+    {
+      "id": "m-2",
+      "title": "ملخص المباراة",
+      "alt": "ملخص المباراة",
+      "type": "video",
+      "category": "matches",
+      "badgeType": "video",
+      "badgeValue": "10:25",
+      "imgSrc": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&auto=format&fit=crop",
+      "description": "شاهد ملخص مباراة نادي الرجاء العراقي كاملة، وأبرز الهجمات والتصديات المثيرة.",
+      "date": "2026/09/25"
+    },
+    {
+      "id": "m-3",
+      "title": "تدريبات",
+      "alt": "تدريبات",
+      "type": "video",
+      "category": "training",
+      "badgeType": "video",
+      "badgeValue": "01:15",
+      "imgSrc": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=500&auto=format&fit=crop",
+      "description": "جانب من تدريبات اللياقة البدنية والسرعة الصباحية للاعبي الفريق الأول.",
+      "date": "2026/09/23"
+    },
+    {
+      "id": "m-4",
+      "title": "الجماهير",
+      "alt": "الجماهير",
+      "type": "photo",
+      "category": "matches",
+      "badgeType": "photo",
+      "badgeValue": "24",
+      "imgSrc": "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=500&auto=format&fit=crop",
+      "description": "حماس ومؤازرة جماهير نادي الرجاء العراقي الوفية في المدرجات طوال الـ 90 دقيقة.",
+      "date": "2026/09/25"
+    },
+    {
+      "id": "m-5",
+      "title": "مؤتمر صحفي",
+      "alt": "مؤتمر صحفي",
+      "type": "photo",
+      "category": "backstage",
+      "badgeType": "photo",
+      "badgeValue": "5",
+      "imgSrc": "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=500&auto=format&fit=crop",
+      "description": "المؤتمر الصحفي لمدرب الفريق وقائد الرجاء العراقي للحديث عن الاستعدادات والجاهزية.",
+      "date": "2026/09/22"
+    },
+    {
+      "id": "m-6",
+      "title": "هدف",
+      "alt": "هدف",
+      "type": "video",
+      "category": "matches",
+      "badgeType": "video",
+      "badgeValue": "00:45",
+      "imgSrc": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=500&auto=format&fit=crop",
+      "description": "لقطة الهدف الصاروخي الذي حسم نقاط اللقاء لصالح فرسان الرافدين.",
+      "date": "2026/09/25"
+    },
+    {
+      "id": "m-7",
+      "title": "كواليس غرفة الملابس",
+      "alt": "كواليس غرفة الملابس",
+      "type": "photo",
+      "category": "backstage",
+      "badgeType": "photo",
+      "badgeValue": "12",
+      "imgSrc": "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?w=500&auto=format&fit=crop",
+      "description": "لقطات حصرية لما قبل نزول اللاعبين لأرضية الميدان والحديث التحفيزي.",
+      "date": "2026/09/24"
+    },
+    {
+      "id": "m-8",
+      "title": "تمارين التسديد على المرمى",
+      "alt": "تمارين التسديد",
+      "type": "video",
+      "category": "training",
+      "badgeType": "video",
+      "badgeValue": "02:40",
+      "imgSrc": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=500&auto=format&fit=crop",
+      "description": "تدريبات فنية مكثفة على الكرات الثابتة والتسديد من مسافات بعيدة.",
+      "date": "2026/09/21"
+    }
+  ],
+  "settings": [
+    {
+      "id": "club",
+      "title": "نادي الرجاء العراقي",
+      "subtitle": "أكثر من مجرد نادي",
+      "phone": "07702523612",
+      "email": "alrajja28@gmail.com",
+      "address": "العراق، بغداد - مجمع نادي الرجاء العراقي الرياضي"
+    }
+  ],
+  "stream": [],
+  "matches": [
+    {
+      "id": "m-1",
+      "opponent": "نادي الزوراء",
+      "opponentLogoText": "الزوراء",
+      "competition": "دوري نجوم العراق - الجولة 18",
+      "stadium": "ملعب الشعب الدولي - بغداد",
+      "date": "السبت، 4 أكتوبر 2026",
+      "time": "20:30",
+      "isHome": true,
+      "status": "upcoming",
+      "ticketPrice": 10000,
+      "title": "الرجاء العراقي × نادي الزوراء"
+    },
+    {
+      "id": "m-2",
+      "opponent": "نادي القوة الجوية",
+      "opponentLogoText": "الجوية",
+      "competition": "دوري نجوم العراق",
+      "stadium": "ملعب الشعب الدولي",
+      "date": "الجمعة الماضية",
+      "time": "انتهت",
+      "isHome": false,
+      "status": "finished",
+      "score": {
+        "wahda": 2,
+        "opponent": 1
+      },
+      "scorers": [
+        "علي حسين 24'",
+        "محمد قاسم 67'"
+      ],
+      "ticketPrice": 0,
+      "title": "الرجاء العراقي × نادي القوة الجوية"
+    },
+    {
+      "id": "m-3",
+      "opponent": "نادي الشرطة",
+      "opponentLogoText": "الشرطة",
+      "competition": "كأس العراق لكرة القدم",
+      "stadium": "ملعب البصرة الدولي",
+      "date": "14 أكتوبر 2026",
+      "time": "19:15",
+      "isHome": true,
+      "status": "upcoming",
+      "ticketPrice": 15000,
+      "title": "الرجاء العراقي × نادي الشرطة"
+    },
+    {
+      "id": "m-4",
+      "opponent": "نادي الطلبة",
+      "opponentLogoText": "الطلبة",
+      "competition": "دوري نجوم العراق",
+      "stadium": "ملعب المدينة الدولي",
+      "date": "21 أكتوبر 2026",
+      "time": "20:00",
+      "isHome": false,
+      "status": "upcoming",
+      "ticketPrice": 10000,
+      "title": "الرجاء العراقي × نادي الطلبة"
+    }
+  ],
+  "academy": [],
+  "standings": [
+    {
+      "id": "rajaa",
+      "title": "نادي الرجاء العراقي",
+      "p": 3,
+      "w": 2,
+      "d": 0,
+      "l": 1,
+      "pts": 6
+    },
+    {
+      "id": "shawi",
+      "title": "الشاوي",
+      "p": 3,
+      "w": 2,
+      "d": 0,
+      "l": 1,
+      "pts": 6
+    },
+    {
+      "id": "stars",
+      "title": "النجوم",
+      "p": 3,
+      "w": 1,
+      "d": 1,
+      "l": 1,
+      "pts": 4
+    },
+    {
+      "id": "ahli",
+      "title": "الأهلي",
+      "p": 3,
+      "w": 1,
+      "d": 1,
+      "l": 1,
+      "pts": 4
+    },
+    {
+      "id": "karkh",
+      "title": "الكرخ",
+      "p": 3,
+      "w": 1,
+      "d": 0,
+      "l": 2,
+      "pts": 3
+    },
+    {
+      "id": "ramadi",
+      "title": "الرمادي",
+      "p": 3,
+      "w": 0,
+      "d": 2,
+      "l": 1,
+      "pts": 2
+    }
+  ]
+}

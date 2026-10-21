@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useContent } from '../backend/useContent';
+import { VideoPlayer } from './VideoPlayer';
 
 export interface MediaItem {
   id: string;
@@ -11,6 +13,7 @@ export interface MediaItem {
   alt: string;
   description?: string;
   date?: string;
+  url?: string;
 }
 
 interface MediaScreenProps {
@@ -133,7 +136,8 @@ export const MediaScreen: React.FC<MediaScreenProps> = ({
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
   // Filter media items
-  const filteredItems = INITIAL_MEDIA_ITEMS.filter((item) => {
+  const mediaItems = useContent<MediaItem>('media', INITIAL_MEDIA_ITEMS);
+  const filteredItems = mediaItems.filter((item) => {
     // Main tab filter
     if (mainTab === 'photos' && item.type !== 'photo') return false;
     if (mainTab === 'videos' && item.type !== 'video') return false;
@@ -297,30 +301,11 @@ export const MediaScreen: React.FC<MediaScreenProps> = ({
               </div>
             </div>
 
-            {/* Media Display */}
             <div className="relative aspect-video w-full bg-black flex items-center justify-center">
-              <img
-                src={selectedMedia.imgSrc}
-                alt={selectedMedia.alt}
-                className="w-full h-full object-cover"
-              />
-              {selectedMedia.type === 'video' ? (
-                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-[#e30613] text-white flex items-center justify-center text-xl shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-play ml-1"></i>
-                  </div>
-                  <span className="text-xs font-mono text-white/90 mt-2 font-bold bg-black/60 px-2.5 py-1 rounded-full">
-                    {selectedMedia.badgeValue}
-                  </span>
-                </div>
-              ) : (
-                <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs font-bold text-white flex items-center gap-1.5">
-                  <i className="fa-regular fa-images text-[#d4af37]"></i>
-                  <span>{selectedMedia.badgeValue} صورة عالية الدقة</span>
-                </div>
-              )}
+              {selectedMedia.type === 'video'
+                ? <VideoPlayer url={selectedMedia.url} title={selectedMedia.title} />
+                : <img src={selectedMedia.imgSrc} alt={selectedMedia.alt} className="w-full h-full object-contain" />}
             </div>
-
             {/* Details */}
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between text-xs text-[#8c96aa]">

@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import {useMutation} from 'convex/react';
+import {clubApi} from '../backend/api';
+import { useContent } from '../backend/useContent';
+import initialContent from '../data/initialContent.json';
 import { LionLogo } from './LionLogo';
 import { OFFICIAL_SOCIAL_LINKS, openSocialPlatform } from '../utils/socialLinks';
 import {
@@ -51,7 +55,18 @@ export const MoreTab: React.FC<MoreTabProps> = ({
 }) => {
   // Modal state for the 9 menu links
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const contact = useContent('settings', initialContent.settings)[0];
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const submitRequest=useMutation(clubApi.submissions.submit);
+  const requestNonce=useRef(crypto.randomUUID());
+  const [requestError,setRequestError]=useState('');
+  const [requestBusy,setRequestBusy]=useState(false);
+  const [requestReference,setRequestReference]=useState('');
+  const sendRequest=async(e:React.FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();const form=new FormData(e.currentTarget);setRequestBusy(true);setRequestError('');
+    try{const row=await submitRequest({kind:'contact',nonce:requestNonce.current,data:Object.fromEntries(form)});setRequestReference(row._id.slice(-8).toUpperCase());setFormSubmitted(true);requestNonce.current=crypto.randomUUID();}
+    catch(error){setRequestError(error instanceof Error?error.message:'تعذر إرسال الطلب');}finally{setRequestBusy(false);}
+  };
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -452,7 +467,7 @@ export const MoreTab: React.FC<MoreTabProps> = ({
                     <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto" />
                     <h4 className="font-bold text-white text-sm">تم إرسال طلبك بنجاح!</h4>
                     <p className="text-xs text-[#8c96aa]">
-                      رقم المتابعة: #REQ-2026-{Math.floor(1000 + Math.random() * 9000)}
+                      رقم المتابعة: {requestReference}
                     </p>
                     <button
                       type="button"
@@ -464,15 +479,12 @@ export const MoreTab: React.FC<MoreTabProps> = ({
                   </div>
                 ) : (
                   <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setFormSubmitted(true);
-                    }}
+                    onSubmit={sendRequest}
                     className="space-y-3 text-xs"
                   >
                     <div>
                       <label className="block text-[#8c96aa] mb-1 font-semibold">نوع الطلب</label>
-                      <select className="w-full bg-[#121c2e] border border-white/10 rounded-xl p-2.5 text-white">
+                      <select name="requestType" className="w-full bg-[#121c2e] border border-white/10 rounded-xl p-2.5 text-white">
                         <option>عضوية جماهيرية جديدة</option>
                         <option>استفسار عن التذاكر والمقاعد</option>
                         <option>اقتراح تطويري للنادي</option>
@@ -482,14 +494,17 @@ export const MoreTab: React.FC<MoreTabProps> = ({
                     <div>
                       <label className="block text-[#8c96aa] mb-1 font-semibold">تفاصيل الطلب</label>
                       <textarea
+                        name="details"
+                        minLength={5}
                         required
                         rows={3}
                         placeholder="اكتب تفاصيل طلبك هنا..."
                         className="w-full bg-[#121c2e] border border-white/10 rounded-xl p-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--primary-red)]"
                       ></textarea>
                     </div>
+                    {requestError&&<p role="alert" className="text-red-300">{requestError}</p>}
                     <button
-                      type="submit"
+                      type="submit" disabled={requestBusy}
                       className="w-full py-2.5 bg-[var(--primary-red)] hover:bg-[#c20510] text-white rounded-xl font-bold transition-colors"
                     >
                       إرسال الطلب لإدارة النادي
@@ -504,22 +519,22 @@ export const MoreTab: React.FC<MoreTabProps> = ({
               <div className="space-y-2.5 text-xs">
                 <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5 space-y-1">
                   <span className="text-[#8c96aa] block">الخط الساخن لخدمة الجماهير</span>
-                  <a href="tel:07702523612" className="font-bold text-sm text-white flex items-center justify-between">
-                    <span dir="ltr">07702523612</span>
+                  <a href={`tel:${contact?.phone || ''}`} className="font-bold text-sm text-white flex items-center justify-between">
+                    <span dir="ltr">{contact?.phone}</span>
                     <i className="fa-solid fa-phone text-emerald-400" aria-hidden="true"></i>
                   </a>
                 </div>
                 <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5 space-y-1">
                   <span className="text-[#8c96aa] block">البريد الإلكتروني الرسمي</span>
-                  <a href="mailto:alrajja28@gmail.com" className="font-bold text-sm text-white flex items-center justify-between">
-                    <span dir="ltr">alrajja28@gmail.com</span>
+                  <a href={`mailto:${contact?.email || ''}`} className="font-bold text-sm text-white flex items-center justify-between">
+                    <span dir="ltr">{contact?.email}</span>
                     <i className="fa-solid fa-envelope text-cyan-400" aria-hidden="true"></i>
                   </a>
                 </div>
                 <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5 space-y-1">
                   <span className="text-[#8c96aa] block">الموقع الجغرافي للنادي</span>
                   <div className="font-bold text-xs text-white">
-                    العراق، بغداد - مجمع نادي الرجاء العراقي الرياضي
+                    {contact?.address}
                   </div>
                 </div>
               </div>

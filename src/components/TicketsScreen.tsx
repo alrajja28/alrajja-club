@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import {useMutation} from 'convex/react';
+import {clubApi} from '../backend/api';
 import { Match, UPCOMING_MATCH } from '../data/clubData';
-import { CheckCircle, QrCode, Ticket as TicketIcon } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { LionLogo } from './LionLogo';
 
 interface TicketTier {
@@ -35,19 +37,23 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
 }) => {
   // Ticket tiers as specified in Template 9: VIP, درجة أولى, درجة ثانية, درجة ثالثة
   const [tiers, setTiers] = useState<TicketTier[]>([
-    { id: 'vip', name: 'VIP', price: 25000, color: '#ffd700', qty: 0 },
-    { id: 'first', name: 'درجة أولى', price: 15000, color: '#e30613', qty: 1 },
-    { id: 'second', name: 'درجة ثانية', price: 10000, color: '#10b981', qty: 1 },
-    { id: 'third', name: 'درجة ثالثة', price: 5000, color: '#3b82f6', qty: 1 },
+    { id: 'vip', name: 'VIP', price: Math.round((match?.ticketPrice??0)*2.5), color: '#ffd700', qty: 0 },
+    { id: 'first', name: 'درجة أولى', price: Math.round((match?.ticketPrice??0)*1.5), color: '#e30613', qty: 0 },
+    { id: 'second', name: 'درجة ثانية', price: match?.ticketPrice??0, color: '#10b981', qty: 1 },
+    { id: 'third', name: 'درجة ثالثة', price: Math.round((match?.ticketPrice??0)*.5), color: '#3b82f6', qty: 0 },
   ]);
 
   const [bookingSuccess, setBookingSuccess] = useState<any>(null);
+  const submitRequest=useMutation(clubApi.submissions.submit);
+  const nonce=useRef(crypto.randomUUID());
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState('');
 
   const updateQty = (id: string, delta: number) => {
     setTiers((prev) =>
       prev.map((tier) => {
         if (tier.id === id) {
-          const newQty = Math.max(0, tier.qty + delta);
+          const newQty = Math.min(20,Math.max(0, tier.qty + delta));
           return { ...tier, qty: newQty };
         }
         return tier;
@@ -59,33 +65,13 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
   const totalAmount = tiers.reduce((acc, curr) => acc + curr.price * curr.qty, 0);
   const totalSeats = tiers.reduce((acc, curr) => acc + curr.qty, 0);
 
-  const handleCheckout = () => {
-    if (totalSeats === 0) {
-      alert('يرجى اختيار تذكرة واحدة على الأقل');
-      return;
-    }
-
-    const selectedTiersSummary = tiers
-      .filter((t) => t.qty > 0)
-      .map((t) => `${t.name} (${t.qty})`)
-      .join(', ');
-
-    const randomCode = 'RAJ-' + Math.floor(100000 + Math.random() * 900000);
-    const newBooking = {
-      id: 't-' + Date.now(),
-      matchTitle: match ? `الرجاء العراقي vs ${match.opponent}` : 'الرجاء العراقي vs الزوراء',
-      date: match?.date ? `${match.date} · ${match.time}` : 'السبت 4 تشرين الأول · الساعة 8:30 مساءً',
-      stadium: match?.stadium || 'ملعب الشعب الدولي - بغداد',
-      category: selectedTiersSummary,
-      seats: totalSeats,
-      total: totalAmount,
-      code: randomCode,
-    };
-
-    setBookingSuccess(newBooking);
-    if (onSuccessBooking) {
-      onSuccessBooking(newBooking);
-    }
+  const handleCheckout = async () => {
+    setError('');if(totalSeats<1||totalSeats>20){setError('اختر بين مقعد واحد و20 مقعدًا');return;}
+    setBusy(true);try{
+      const row=await submitRequest({kind:'tickets',nonce:nonce.current,data:{matchId:match?.id,quantities:Object.fromEntries(tiers.map(t=>[t.id,t.qty]))}});
+      const booking={...row.data,id:row._id,status:row.status,code:row._id.slice(-8).toUpperCase()};
+      setBookingSuccess(booking);onSuccessBooking?.(booking);
+    }catch(e){setError(e instanceof Error?e.message:'تعذر إرسال طلب الحجز');}finally{setBusy(false);}
   };
 
   return (
@@ -186,12 +172,13 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
             {totalAmount.toLocaleString()} <small>د.ع</small>
           </span>
         </div>
-        <button
+        {error&&<p role="alert" className="text-red-300 text-xs mb-2">{error}</p>}
+        <button disabled={busy}
           className="btn-primary"
           style={{ width: '100%', borderRadius: '15px' }}
           onClick={handleCheckout}
         >
-          إتمام الشراء
+          {busy?'جارٍ إرسال الطلب…':'إرسال طلب الحجز'}
         </button>
       </div>
 
@@ -203,9 +190,9 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
               <CheckCircle className="w-8 h-8" />
             </div>
 
-            <h3 className="text-xl font-black mb-1">تم تأكيد حجز التذاكر!</h3>
+            <h3 className="text-xl font-black mb-1">تم استلام طلب الحجز</h3>
             <p className="text-xs text-[#8c96aa] mb-4">
-              تم إضافة التذاكر إلى محفظتك الإلكترونية وبطاقتك الرقمية
+              بانتظار مراجعة الإدارة. هذا الطلب ليس تذكرة دخول ولم يتم تحصيل مبلغ.
             </p>
 
             <div className="bg-[#121c2e] p-4 rounded-2xl border border-white/5 text-right space-y-2 mb-4 text-xs">
@@ -239,9 +226,7 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
 
             {/* رمز الباركود */}
             <div className="p-3 bg-white rounded-xl inline-block mb-3">
-              <div className="flex items-center justify-center gap-1">
-                <QrCode className="w-20 h-20 text-black" />
-              </div>
+              <div className="text-black text-xs">رقم متابعة الطلب</div>
               <div className="text-[10px] text-black font-mono font-bold mt-1">
                 {bookingSuccess.code}
               </div>

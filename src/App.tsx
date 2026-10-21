@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useConvexAuth, useQuery } from 'convex/react';
+import { useAuthActions } from '@convex-dev/auth/react';
+import { clubApi } from './backend/api';
 import { SplashScreen } from './components/SplashScreen';
 import { LoginScreen } from './components/LoginScreen';
 import { HomeTab } from './components/HomeTab';
@@ -36,6 +39,9 @@ export type AppScreenId =
   | 'profile-screen';
 
 export default function App() {
+  const { isAuthenticated } = useConvexAuth();
+  const { signOut } = useAuthActions();
+  const viewer = useQuery(clubApi.content.me, isAuthenticated ? {} : 'skip');
   // 1. نظام التوجيه (Navigation System) وسجل الشاشات لزر الرجوع
   const [currentScreen, setCurrentScreen] = useState<AppScreenId>('splash-screen');
   const [screenHistory, setScreenHistory] = useState<AppScreenId[]>(['splash-screen']);
@@ -48,9 +54,9 @@ export default function App() {
 
   // Authenticated user state
   const [user, setUser] = useState({
-    name: 'علي الكرخي',
-    phone: '+964 770 123 4567',
-    role: 'مشجع ذهبي',
+    name: 'زائر',
+    phone: '',
+    role: 'مشجع',
   });
 
   // Modals state
@@ -65,18 +71,8 @@ export default function App() {
     Array<{ id: string; name: string; price: number; quantity: number; options?: string }>
   >([]);
 
-  const [bookedTickets, setBookedTickets] = useState<any[]>([
-    {
-      id: 't-default',
-      matchTitle: 'الرجاء العراقي vs الزوراء',
-      date: 'السبت، 4 تشرين الأول 2026 · 20:30',
-      stadium: 'ملعب الشعب الدولي - بغداد',
-      category: 'مدرج جماهير الرجاء العراقي',
-      seats: 2,
-      total: 20000,
-      code: 'RAJ-891024',
-    },
-  ]);
+  const submissions=useQuery(clubApi.submissions.mine,isAuthenticated?{}:'skip');
+  const bookedTickets=(submissions??[]).filter((r:any)=>r.kind==='tickets').map((r:any)=>({...r.data,id:r._id,status:r.status,code:r._id.slice(-8).toUpperCase()}));
 
   // Function to switch screens with history tracking
   const switchScreen = (screenId: AppScreenId | string, isBack = false) => {
@@ -115,10 +111,18 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    void signOut();
     setUser({ name: 'زائر', phone: 'غير مسجل', role: 'مشجع' });
     setScreenHistory(['splash-screen']);
     setCurrentScreen('splash-screen');
   };
+
+  useEffect(() => {
+    if (viewer && isAuthenticated) {
+      setUser({name:viewer.name || 'مشجع رجاوي',phone:viewer.email || '',role:viewer.isAdmin?'إدارة النادي':'مشجع'});
+      setCurrentScreen(screen => screen === 'login-screen' || screen === 'splash-screen' ? 'home-screen' : screen);
+    }
+  }, [viewer, isAuthenticated]);
 
   const handleAddToCart = (
     product: Product,
@@ -141,7 +145,7 @@ export default function App() {
   };
 
   const handleTicketBooked = (ticket: any) => {
-    setBookedTickets((prev) => [ticket, ...prev]);
+    // Convex subscriptions update the persisted requests automatically.
   };
 
   // Expose switchScreen & goBack globally and set up delegated events

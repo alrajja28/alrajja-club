@@ -1,3 +1,5 @@
+import initialContent from '../data/initialContent.json';
+import { useContent } from '../backend/useContent';
 import React, { useState } from 'react';
 import { ShoppingBag, Check } from 'lucide-react';
 import { Product } from '../data/clubData';
@@ -33,50 +35,7 @@ export const StoreTab: React.FC<StoreTabProps> = ({
   const [recentlyAddedId, setRecentlyAddedId] = useState<string | null>(null);
 
   // Products from Template 10
-  const products: StoreProduct[] = [
-    {
-      id: 'prod-1',
-      title: 'تيشرت أساسي 2026',
-      category: 'jerseys',
-      price: 35000,
-      image: 'https://images.unsplash.com/photo-1577212017184-80cc0da11082?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 'prod-2',
-      title: 'تيشرت احتياطي 2026',
-      category: 'jerseys',
-      price: 35000,
-      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 'prod-3',
-      title: 'تيشرت تمرين',
-      category: 'training',
-      price: 25000,
-      image: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 'prod-4',
-      title: 'شورت النادي',
-      category: 'training',
-      price: 15000,
-      image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 'prod-5',
-      title: 'قبعة النادي',
-      category: 'accessories',
-      price: 10000,
-      image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 'prod-6',
-      title: 'شال النادي',
-      category: 'accessories',
-      price: 12000,
-      image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=400&q=80',
-    },
-  ];
+  const products: StoreProduct[] = useContent<StoreProduct>('products', initialContent.products as StoreProduct[]);
 
   const filteredProducts = activeTab === 'all'
     ? products

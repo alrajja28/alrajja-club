@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useContent } from '../backend/useContent';
+import { useMutation } from 'convex/react';
+import { clubApi } from '../backend/api';
 import { LionLogo } from './LionLogo';
 import {
   ACADEMY_PLAYERS,
@@ -13,6 +16,7 @@ interface AcademyScreenProps {
 }
 
 export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu }) => {
+  const announcements = useContent<{id:string;title:string;description?:string;image?:string}>('academy');
   // Main tabs: الأشبال | الناشئين | الشباب | الفريق الأول
   const [activeMainTab, setActiveMainTab] = useState<'اشبال' | 'ناشئين' | 'شباب' | 'اول'>('اشبال');
 
@@ -35,6 +39,10 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
     position: 'وسط',
   });
   const [regSubmitted, setRegSubmitted] = useState(false);
+  const submitRegistration = useMutation(clubApi.submissions.submit);
+  const [registrationError,setRegistrationError] = useState('');
+  const [registrationBusy,setRegistrationBusy] = useState(false);
+  const registrationNonce=useRef(crypto.randomUUID());
 
   // Switch category and update default subfilter accordingly
   const handleCategoryChange = (tab: 'اشبال' | 'ناشئين' | 'شباب' | 'اول') => {
@@ -63,9 +71,14 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
   const bannerInfo = ACADEMY_BANNER_INFO[activeMainTab];
   const subFilters = ACADEMY_SUB_FILTERS[activeMainTab] || [];
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setRegSubmitted(true);
+    setRegistrationError('');setRegistrationBusy(true);
+    try {
+      await submitRegistration({kind:'academy',data:regForm,nonce:registrationNonce.current});
+      setRegSubmitted(true);
+    } catch(error) {setRegistrationError(error instanceof Error ? error.message : 'تعذر إرسال الطلب');}
+    finally {setRegistrationBusy(false);}
   };
 
   const getCategoryTitleAr = () => {
@@ -142,6 +155,10 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
       </div>
 
       <div className="academy-content">
+        {announcements.map(item => <article key={item.id} className="match-card">
+          {item.image && <img src={item.image} alt={item.title} className="w-full h-36 object-cover rounded-xl mb-3"/>}
+          <h2 className="font-bold text-sm">{item.title}</h2><p className="text-xs leading-loose text-[#a3aec2] mt-2">{item.description}</p>
+        </article>)}
         {/* البانر التفاعلي لكل فئة */}
         <div className="academy-banner relative rounded-2xl overflow-hidden mb-4 shadow-lg">
           <img
@@ -505,6 +522,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
               </div>
             ) : (
               <form onSubmit={handleRegisterSubmit} className="mt-4 space-y-3">
+                {registrationError && <p role="alert" className="text-xs text-red-300">{registrationError}</p>}
                 <div>
                   <label className="block text-[11px] font-semibold text-[#8c96aa] mb-1">
                     اسم اللاعب الرباعي
@@ -570,7 +588,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                 </div>
 
                 <button
-                  type="submit"
+                  type="submit" disabled={registrationBusy}
                   className="w-full py-3 bg-[#e30613] hover:bg-[#c40510] text-white font-bold text-xs rounded-xl mt-2 cursor-pointer transition shadow-lg"
                 >
                   إرسال طلب الانضمام للأكاديمية
