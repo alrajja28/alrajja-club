@@ -1,3 +1,8 @@
+import type {AuthConfig} from 'convex/server';
 export default {
-  providers: [{ domain: process.env.CONVEX_SITE_URL, applicationID: 'convex' }],
-};
+  providers:process.env.FIREBASE_PROJECT_ID?[{
+    type:'customJwt',applicationID:process.env.FIREBASE_PROJECT_ID,
+    issuer:`https://securetoken.google.com/${process.env.FIREBASE_PROJECT_ID}`,
+    jwks:'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com',algorithm:'RS256',
+  }]:[],
+} satisfies AuthConfig;

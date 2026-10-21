@@ -10,6 +10,7 @@ export const section = v.union(
 
 export default defineSchema({
   ...authTables,
+  googleIdentities:defineTable({identity:v.string(),userId:v.id('users')}).index('by_identity',['identity']),
   content: defineTable({
     section, slug: v.string(), title: v.string(), data: v.any(),
     published: v.boolean(), sort: v.number(), updatedAt: v.number(),

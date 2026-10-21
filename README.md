@@ -10,7 +10,7 @@ The Convex backend lives in convex/. Run npm test to check permissions, publicat
 
 Production deployment: watchful-nightingale-349. Development deployment: benevolent-goldfish-662. Use separate customer credentials when running Convex CLI.
 
-Configure backend variables JWT_PRIVATE_KEY, JWKS, SITE_URL, APP_ORIGINS, ADMIN_EMAILS, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET. Never commit credentials or environment files. Google OAuth callbacks: https://watchful-nightingale-349.convex.site/api/auth/callback/google (production), https://benevolent-goldfish-662.eu-west-1.convex.site/api/auth/callback/google (development).
+Configure backend variables FIREBASE_PROJECT_ID=alrajja-club-auth and ADMIN_EMAILS=alrajja28@gmail.com. Never commit secrets or credential files. Convex JWT configuration uses the Google public JWKS; it does not require a Google OAuth client secret. The old Convex Auth tables remain intact for data compatibility; only the Firebase issuer is accepted by the current auth configuration.
 
 Deployment-only bootstrap:initialize imports original content once; it never overwrites an existing database.
 
@@ -21,6 +21,6 @@ Build with the production VITE_CONVEX_URL. Publish dist/ to the gh-pages branch.
 
 ## Current boundaries
 
-Google login remains unavailable until the customer completes the Google Cloud country and OAuth client setup. No paid trial or billing account was enabled.
+Google login uses the customer-owned Firebase project alrajja-club-auth (Spark, no billing). Only Google is enabled. Application data and uploads stay in Convex. src/backend/firebase-config.json contains public web SDK identifiers, not server credentials. Convex verifies the Firebase issuer, project audience, signature, verified email, and Google provider before linking a user.
 
 Ticket submissions are review requests, not paid tickets. This release does not issue admission QR codes or process payments. Live video uses a provided HTTPS/YouTube source or uploaded MP4/WebM; it does not provision a broadcasting service.

@@ -10,15 +10,40 @@ const modules = {
   './_generated/testModuleRoot.ts': async () => ({}),
 };
 const api = anyApi;
-beforeEach(() => vi.stubEnv('ADMIN_EMAILS', 'alrajja28@gmail.com'));
+beforeEach(() => {vi.stubEnv('ADMIN_EMAILS', 'alrajja28@gmail.com');vi.stubEnv('FIREBASE_PROJECT_ID','alrajja-club-auth');});
 afterEach(() => vi.unstubAllEnvs());
 
 async function createActor(email: string) {
   const t = convexTest(schema, modules);
-  const userId = await t.run(ctx => ctx.db.insert('users', { email, name:'Test', emailVerificationTime:Date.now() }));
-  return { t, actor:t.withIdentity({subject:`${userId}|test-session`}) };
+  const actor=t.withIdentity({...googleIdentity,subject:email,email});
+  await actor.mutation(api.identity.ensureUser,{});
+  return { t, actor };
 }
 const product = {section:'products',slug:'test-product',title:'Test kit',data:{price:12000,category:'jerseys'},published:false,sort:0};
+
+const googleIdentity={issuer:'https://securetoken.google.com/alrajja-club-auth',subject:'google-customer',email:'alrajja28@gmail.com',emailVerified:true,firebase:{sign_in_provider:'google.com'}};
+describe('Firebase Google identity boundary',()=>{
+  it('creates a single profile for a verified Google identity',async()=>{
+    const t=convexTest(schema,modules),actor=t.withIdentity(googleIdentity);
+    const first=await actor.mutation(api.identity.ensureUser,{});
+    expect(await actor.mutation(api.identity.ensureUser,{})).toBe(first);
+    expect((await actor.query(api.content.me,{})).isAdmin).toBe(true);
+  });
+  it('rejects unverified mail, another issuer, and non-Google sign-in',async()=>{
+    const t=convexTest(schema,modules);
+    for(const change of [{emailVerified:false},{issuer:'https://securetoken.google.com/another-project'},{firebase:{sign_in_provider:'password'}}]){
+      const actor=t.withIdentity({...googleIdentity,...change});
+      await expect(actor.mutation(api.identity.ensureUser,{})).rejects.toThrow('Google');
+      expect(await actor.query(api.content.me,{})).toBeNull();
+    }
+  });
+  it('uses the fresh verified mail rather than a cached admin profile',async()=>{
+    const t=convexTest(schema,modules),admin=t.withIdentity(googleIdentity);
+    await admin.mutation(api.identity.ensureUser,{});
+    const changed=t.withIdentity({...googleIdentity,email:'fan@example.com'});
+    await expect(changed.mutation(api.content.save,product)).rejects.toThrow('تصريح');
+  });
+});
 
 describe('server-side content authorization',()=>{
   it('blocks anonymous administration and uploads',async()=>{
@@ -70,15 +95,16 @@ describe('fan requests',()=>{
     const retry=await actor.mutation(api.submissions.submit,request);
     expect(retry._id).toBe(first._id);
     expect(await actor.query(api.submissions.mine,{})).toHaveLength(1);
-    const otherId=await t.run(ctx=>ctx.db.insert('users',{email:'other@example.com'}));
-    expect(await t.withIdentity({subject:`${otherId}|session`}).query(api.submissions.mine,{})).toEqual([]);
+    const other=t.withIdentity({...googleIdentity,subject:'other',email:'other@example.com'});
+    await other.mutation(api.identity.ensureUser,{});
+    expect(await other.query(api.submissions.mine,{})).toEqual([]);
     await expect(actor.query(api.submissions.listAdmin,{})).rejects.toThrow('تصريح');
     await expect(actor.mutation(api.submissions.review,{id:first._id,status:'approved'})).rejects.toThrow('تصريح');
   });
   it('calculates ticket totals on the server and allows admin review',async()=>{
     const {t,actor}=await createActor('fan@example.com');
-    const adminId=await t.run(ctx=>ctx.db.insert('users',{email:'alrajja28@gmail.com'}));
-    const admin=t.withIdentity({subject:`${adminId}|session`});
+    const admin=t.withIdentity(googleIdentity);
+    await admin.mutation(api.identity.ensureUser,{});
     await admin.mutation(api.content.save,{section:'matches',slug:'match',title:'Match',data:{opponent:'Test',date:'Tomorrow',stadium:'Club',status:'upcoming',ticketPrice:10000},published:true,sort:0});
     const row=await actor.mutation(api.submissions.submit,{kind:'tickets',nonce:'ticket-request',data:{matchId:'match',quantities:{vip:2,second:1},total:1}});
     expect(row.data.total).toBe(60000);

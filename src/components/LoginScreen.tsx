@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useAuthActions } from '@convex-dev/auth/react';
+import { useClubAuthActions } from '../backend/CustomerAuth';
 import {useQuery} from 'convex/react';
 import {clubApi} from '../backend/api';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { LionLogo } from './LionLogo';
 interface LoginScreenProps { onBack:()=>void; onLoginSuccess:(userData:{name:string;phone:string;role:string})=>void; onContinueGuest:()=>void; }
 export const LoginScreen:React.FC<LoginScreenProps>=({onBack,onContinueGuest})=>{
-  const {signIn}=useAuthActions(); const [error,setError]=useState(''); const [busy,setBusy]=useState(false);
+  const {signIn}=useClubAuthActions(); const [error,setError]=useState(''); const [busy,setBusy]=useState(false);
   const authStatus=useQuery(clubApi.content.authStatus,{});
   async function login(){setBusy(true);setError('');try{await signIn('google',{redirectTo:window.location.origin+import.meta.env.BASE_URL});}catch{setError('تعذر بدء تسجيل الدخول. حاول مرة أخرى.');setBusy(false);}}
   return <div id="login-screen" className="w-full h-full min-h-0 flex flex-col p-6 overflow-y-auto">

@@ -13,6 +13,7 @@ import type * as bootstrap from "../bootstrap.js";
 import type * as content from "../content.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
+import type * as identity from "../identity.js";
 import type * as model from "../model.js";
 import type * as permissions from "../permissions.js";
 import type * as submissions from "../submissions.js";
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   content: typeof content;
   files: typeof files;
   http: typeof http;
+  identity: typeof identity;
   model: typeof model;
   permissions: typeof permissions;
   submissions: typeof submissions;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useConvexAuth, useQuery } from 'convex/react';
-import { useAuthActions } from '@convex-dev/auth/react';
+import { useClubAuthActions } from './backend/CustomerAuth';
 import { clubApi } from './backend/api';
 import { SplashScreen } from './components/SplashScreen';
 import { LoginScreen } from './components/LoginScreen';
@@ -40,7 +40,7 @@ export type AppScreenId =
 
 export default function App() {
   const { isAuthenticated } = useConvexAuth();
-  const { signOut } = useAuthActions();
+  const { signOut } = useClubAuthActions();
   const viewer = useQuery(clubApi.content.me, isAuthenticated ? {} : 'skip');
   // 1. نظام التوجيه (Navigation System) وسجل الشاشات لزر الرجوع
   const [currentScreen, setCurrentScreen] = useState<AppScreenId>('splash-screen');

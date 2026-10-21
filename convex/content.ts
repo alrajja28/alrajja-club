@@ -4,7 +4,7 @@ import { section } from './schema';
 import { currentUser, isAdminEmail, requireAdmin } from './permissions';
 import initialContent from './initialContent.json';
 
-export const authStatus=query({args:{},handler:async()=>({googleReady:Boolean(process.env.AUTH_GOOGLE_ID&&process.env.AUTH_GOOGLE_SECRET)})});
+export const authStatus=query({args:{},handler:async()=>({googleReady:Boolean(process.env.FIREBASE_PROJECT_ID)})});
 
 export const me = query({ args: {}, handler: async ctx => {
   const user = await currentUser(ctx);
