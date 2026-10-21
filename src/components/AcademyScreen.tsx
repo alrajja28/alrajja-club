@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useContent } from '../backend/useContent';
 import { useMutation } from 'convex/react';
 import { clubApi } from '../backend/api';
+import {errorMessage} from '../backend/errors';
 import { LionLogo } from './LionLogo';
 import {
   ACADEMY_PLAYERS,
@@ -77,7 +78,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
     try {
       await submitRegistration({kind:'academy',data:regForm,nonce:registrationNonce.current});
       setRegSubmitted(true);
-    } catch(error) {setRegistrationError(error instanceof Error ? error.message : 'تعذر إرسال الطلب');}
+    } catch(error) {setRegistrationError(errorMessage(error));}
     finally {setRegistrationBusy(false);}
   };
 

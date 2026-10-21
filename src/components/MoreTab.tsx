@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {useMutation} from 'convex/react';
 import {clubApi} from '../backend/api';
+import {errorMessage} from '../backend/errors';
 import { useContent } from '../backend/useContent';
 import initialContent from '../data/initialContent.json';
 import { LionLogo } from './LionLogo';
@@ -65,7 +66,7 @@ export const MoreTab: React.FC<MoreTabProps> = ({
   const sendRequest=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();const form=new FormData(e.currentTarget);setRequestBusy(true);setRequestError('');
     try{const row=await submitRequest({kind:'contact',nonce:requestNonce.current,data:Object.fromEntries(form)});setRequestReference(row._id.slice(-8).toUpperCase());setFormSubmitted(true);requestNonce.current=crypto.randomUUID();}
-    catch(error){setRequestError(error instanceof Error?error.message:'تعذر إرسال الطلب');}finally{setRequestBusy(false);}
+    catch(error){setRequestError(errorMessage(error));}finally{setRequestBusy(false);}
   };
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 

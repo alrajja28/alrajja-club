@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {useMutation} from 'convex/react';
 import {clubApi} from '../backend/api';
+import {errorMessage} from '../backend/errors';
 import { Match, UPCOMING_MATCH } from '../data/clubData';
 import { CheckCircle } from 'lucide-react';
 import { LionLogo } from './LionLogo';
@@ -71,7 +72,7 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
       const row=await submitRequest({kind:'tickets',nonce:nonce.current,data:{matchId:match?.id,quantities:Object.fromEntries(tiers.map(t=>[t.id,t.qty]))}});
       const booking={...row.data,id:row._id,status:row.status,code:row._id.slice(-8).toUpperCase()};
       setBookingSuccess(booking);onSuccessBooking?.(booking);
-    }catch(e){setError(e instanceof Error?e.message:'تعذر إرسال طلب الحجز');}finally{setBusy(false);}
+    }catch(e){setError(errorMessage(e));}finally{setBusy(false);}
   };
 
   return (
