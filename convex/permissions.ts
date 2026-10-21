@@ -4,7 +4,7 @@ import type { QueryCtx, MutationCtx } from './model';
 export async function verifiedGoogleIdentity(ctx:QueryCtx|MutationCtx){
   const identity=await ctx.auth.getUserIdentity();
   const project=process.env.FIREBASE_PROJECT_ID;
-  if(!project||!identity||identity.issuer!==`https://securetoken.google.com/${project}`||identity.emailVerified!==true||!identity.email)return null;
+  if(!project||!identity||identity.issuer!==`https://securetoken.google.com/${project}`||identity['email_verified']!==true||!identity.email)return null;
   if(identity['firebase.sign_in_provider']!=='google.com')return null;
   return identity;
 }
