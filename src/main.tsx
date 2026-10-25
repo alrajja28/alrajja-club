@@ -1,12 +1,9 @@
-import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
-import App from './App.tsx';
-import { BackendRoot } from './backend/BackendRoot';
-import './index.css';
-import './club-theme.css';
+import Maintenance from './Maintenance';
+import {MAINTENANCE_ENABLED} from './maintenance-config';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BackendRoot><App /></BackendRoot>
-  </StrictMode>,
-);
+if(MAINTENANCE_ENABLED){
+  createRoot(document.getElementById('root')!).render(<Maintenance/>);
+}else{
+  void import('./bootstrap');
+}
