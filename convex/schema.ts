@@ -5,7 +5,7 @@ import { authTables } from '@convex-dev/auth/server';
 export const section = v.union(
   v.literal('products'), v.literal('news'), v.literal('media'),
   v.literal('stream'), v.literal('matches'), v.literal('players'),
-  v.literal('academy'), v.literal('settings'), v.literal('standings'),
+  v.literal('academy'), v.literal('settings'), v.literal('standings'), v.literal('playerCategories'),
 );
 
 export default defineSchema({
@@ -14,7 +14,7 @@ export default defineSchema({
   content: defineTable({
     section, slug: v.string(), title: v.string(), data: v.any(),
     published: v.boolean(), sort: v.number(), updatedAt: v.number(),
-    updatedBy: v.optional(v.id('users')),
+    updatedBy: v.optional(v.id('users')), deletedAt: v.optional(v.number()),
   }).index('by_section', ['section']).index('by_section_slug', ['section', 'slug']),
   uploads: defineTable({
     storageId: v.id('_storage'), owner: v.id('users'),

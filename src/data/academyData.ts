@@ -1,22 +1,22 @@
 export interface AcademyPlayer {
   id: string;
   name: string;
-  category: 'اشبال' | 'ناشئين' | 'شباب' | 'اول';
+  category: string;
   categoryTitle: string;
   subCategory: string; // e.g. '2012', '2011', '2013' or '2010', '2009', '2008' or '2006', '2007', '2005' or 'gk', 'def', 'mid', 'fwd', 'all'
-  number: number;
+  number: number|string;
   position: string;
-  posGroup: 'gk' | 'def' | 'mid' | 'fwd';
+  posGroup?: 'gk' | 'def' | 'mid' | 'fwd';
   imgUrl: string;
   birthYear: string;
   height: string;
   weight?: string;
-  foot: 'يمنى' | 'يسرى' | 'كلتا القدمين';
-  matches: number;
+  foot?: 'يمنى' | 'يسرى' | 'كلتا القدمين';
+  matches?: number;
   goals?: number;
   assists?: number;
   cleanSheets?: number;
-  rating: number;
+  rating?: number|string;
   specialSkill: string;
 }
 

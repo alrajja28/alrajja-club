@@ -251,3 +251,5 @@
   }
   .club-app :is(.link-item, .a-link-card, .product-card, .player-card, .news-card, .media-card, .btn-primary, .red-btn, #btn-start):hover { transform: none; }
 }
+
+.player-category-filters button{font:inherit;background:transparent;border:0;white-space:nowrap;cursor:pointer}.player-category-filters{flex-shrink:0;overflow-x:auto}.academy-tabs{overflow-x:auto}.academy-tab-btn{flex-shrink:0;white-space:nowrap}

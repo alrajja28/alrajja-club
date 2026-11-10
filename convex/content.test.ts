@@ -115,3 +115,66 @@ describe('fan requests',()=>{
     await expect(actor.mutation(api.submissions.submit,{kind:'tickets',nonce:'invalid-quantity',data:{matchId:'match',quantities:{second:21}}})).rejects.toThrow('المقاعد');
   });
 });
+
+
+describe('content deletion and editable player categories',()=>{
+  it('removes every content section from active lists and restores it without losing its data',async()=>{
+    const {t,actor}=await createActor('alrajja28@gmail.com');
+    for(const section of ['products','news','media','stream','matches','players','academy','settings','standings']){
+      const record={...product,section,slug:'delete-'+section,published:true,data:section==='players'?{name:'Existing player'}:{price:12000}};
+      await actor.mutation(api.content.save,record);
+      const [row]=await actor.query(api.content.listAdmin,{section});
+      await expect(t.mutation(api.content.remove,{id:row._id})).rejects.toThrow('تصريح');
+      await actor.mutation(api.content.remove,{id:row._id});
+      expect(await actor.query(api.content.listAdmin,{section})).toEqual([]);
+      expect(await t.query(api.content.listPublished,{section})).toEqual([]);
+      const [deleted]=await actor.query(api.content.listAdmin,{section,trashed:true});
+      expect(deleted._id).toBe(row._id);expect(deleted.data).toEqual(row.data);
+      await expect(actor.mutation(api.content.save,{...record,id:row._id})).rejects.toThrow('المحذوفات');
+      await actor.mutation(api.content.restore,{id:row._id});
+      const [restored]=await actor.query(api.content.listAdmin,{section});
+      expect(restored.published).toBe(false);expect(restored.data).toEqual(row.data);
+    }
+  });
+  it('creates and renames categories, protects assigned players, and keeps deleted defaults deleted',async()=>{
+    const {t,actor}=await createActor('alrajja28@gmail.com');
+    expect(await t.query(api.content.listPlayerCategories,{})).toHaveLength(4);
+    await actor.mutation(api.content.save,{...product,section:'playerCategories',slug:'youth',title:'شباب النادي',published:true,data:{}});
+    expect((await t.query(api.content.listPlayerCategories,{})).filter((c:any)=>c.slug==='youth')).toHaveLength(1);
+    expect((await t.query(api.content.listPlayerCategories,{})).find((c:any)=>c.slug==='youth').title).toBe('شباب النادي');
+    const category={...product,section:'playerCategories',slug:'new-academy',title:'البراعم',published:true,data:{}};
+    await actor.mutation(api.content.save,category);
+    let categories=await t.query(api.content.listPlayerCategories,{});
+    const added=categories.find((c:any)=>c.slug==='new-academy');expect(added.title).toBe('البراعم');
+    await actor.mutation(api.content.save,{...category,id:added._id,title:'براعم النادي'});
+    expect((await t.query(api.content.listPlayerCategories,{})).find((c:any)=>c.slug===added.slug).title).toBe('براعم النادي');
+    const player={...product,section:'players',slug:'young-player',data:{name:'Young player',teamCategory:'new-academy',birthYear:2014}};
+    await actor.mutation(api.content.save,player);
+    await expect(actor.mutation(api.content.removeCategory,{slug:added.slug})).rejects.toThrow('انقل');
+    const [row]=await actor.query(api.content.listAdmin,{section:'players'});
+    await actor.mutation(api.content.remove,{id:row._id});
+    await actor.mutation(api.content.removeCategory,{slug:added.slug});
+    expect((await t.query(api.content.listPlayerCategories,{})).some((c:any)=>c.slug===added.slug)).toBe(false);
+    await expect(actor.mutation(api.content.restore,{id:row._id})).rejects.toThrow('التصنيف');
+    await actor.mutation(api.content.restore,{id:added._id});
+    await actor.mutation(api.content.restore,{id:row._id});
+    await actor.mutation(api.content.removeCategory,{slug:'cubs'});
+    expect((await t.query(api.content.listPlayerCategories,{})).some((c:any)=>c.slug==='cubs')).toBe(false);
+    const [deletedDefault]=await actor.query(api.content.listAdmin,{section:'playerCategories',trashed:true});
+    await actor.mutation(api.content.restore,{id:deletedDefault._id});
+    expect((await t.query(api.content.listPlayerCategories,{})).some((c:any)=>c.slug==='cubs')).toBe(true);
+  });
+  it('preserves uncategorized legacy players and denies invalid categories and fan deletion',async()=>{
+    const {t,actor}=await createActor('alrajja28@gmail.com');
+    await t.run(async ctx=>{await ctx.db.insert('content',{...product,section:'players',data:{name:'Legacy player'},published:true,updatedAt:1});});
+    await expect(actor.mutation(api.content.removeCategory,{slug:'first'})).rejects.toThrow('انقل');
+    await expect(actor.mutation(api.content.save,{...product,section:'players',data:{teamCategory:'missing'}})).rejects.toThrow('التصنيف');
+    await expect(actor.mutation(api.content.save,{...product,section:'players',data:{teamCategory:'first',birthYear:1600}})).rejects.toThrow('الميلاد');
+    const fan=t.withIdentity({...googleIdentity,subject:'fan-delete',email:'fan@example.com'});await fan.mutation(api.identity.ensureUser,{});
+    const [row]=await actor.query(api.content.listAdmin,{section:'players'});
+    await expect(fan.mutation(api.content.remove,{id:row._id})).rejects.toThrow('تصريح');
+    await expect(fan.mutation(api.content.restore,{id:row._id})).rejects.toThrow('تصريح');
+    await expect(fan.mutation(api.content.removeCategory,{slug:'first'})).rejects.toThrow('تصريح');
+    await expect(fan.query(api.content.listAdmin,{section:'players',trashed:true})).rejects.toThrow('تصريح');
+  });
+});

@@ -1,10 +1,12 @@
-import initialContent from '../data/initialContent.json';
 import { useContent } from '../backend/useContent';
+import {usePlayerCategories} from '../backend/usePlayerCategories';
 import React, { useState } from 'react';
 import { LionLogo } from './LionLogo';
 
 export interface Player {
   id: string;
+  teamCategory?:string;
+  birthYear?:number;
   name: string;
   number: number;
   position: 'حراس' | 'دفاع' | 'وسط' | 'هجوم';
@@ -31,13 +33,16 @@ interface TeamTabProps {
 export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPlayer }) => {
   const [mainTab, setMainTab] = useState<'formation' | 'players' | 'staff' | 'management'>('players');
   const [subFilter, setSubFilter] = useState<'كل اللاعبين' | 'حراس' | 'دفاع' | 'وسط' | 'هجوم'>('كل اللاعبين');
+  const categories=usePlayerCategories();
+  const [categoryFilter,setCategoryFilter]=useState('all');
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
   // Exact players from Template 6 specification + extended squad
-  const playersData: Player[] = useContent<Player>('players', initialContent.players as Player[]);
+  const playersData: Player[] = useContent<Player>('players');
 
   // Filtering players by position
   const filteredPlayers = playersData.filter((player) => {
+    if(categoryFilter!=='all'&&(player.teamCategory??'first')!==categoryFilter)return false;
     if (subFilter === 'كل اللاعبين') return true;
     return player.position === subFilter;
   });
@@ -69,7 +74,7 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
           onClick={onBack}
           title="رجوع"
         ></i>
-        <h2 className="header-title">الفريق الأول</h2>
+        <h2 className="header-title">فرق النادي واللاعبون</h2>
         <i
           className="fa-solid fa-bars menu-icon"
           onClick={onOpenMenu}
@@ -108,6 +113,10 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
       {/* Main Tab 1: Players (الكليشة 6) */}
       {mainTab === 'players' && (
         <div className="flex-1 flex flex-col overflow-hidden">
+          <nav className="sub-filters player-category-filters" aria-label="فئات اللاعبين">
+            <button className={'filter-item '+(categoryFilter==='all'?'active':'')} aria-pressed={categoryFilter==='all'} onClick={()=>setCategoryFilter('all')}>كل الفئات</button>
+            {categories.map(c=><button key={c.slug} className={'filter-item '+(categoryFilter===c.slug?'active':'')} aria-pressed={categoryFilter===c.slug} onClick={()=>setCategoryFilter(c.slug)}>{c.title}</button>)}
+          </nav>
           {/* شريط التصنيفات (المراكز) */}
           <div className="sub-filters">
             <span
@@ -144,6 +153,7 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
 
           {/* شبكة اللاعبين */}
           <div className="players-grid">
+            {filteredPlayers.length===0&&<p className="text-center text-sm text-[#8c96aa] p-6 col-span-2">لا يوجد لاعبون في هذه الفئة حاليًا.</p>}
             {filteredPlayers.map((player) => (
               <div
                 key={player.id}
@@ -171,7 +181,7 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
                   <span className="player-number">{player.number}</span>
                   <div className="player-name-pos">
                     <span className="player-name">{player.name}</span>
-                    <span className="player-pos">{player.posName}</span>
+                    <span className="player-pos">{player.posName||player.position} · {categories.find(c=>c.slug===(player.teamCategory??'first'))?.title??'الفريق الأول'}</span>
                   </div>
                 </div>
               </div>

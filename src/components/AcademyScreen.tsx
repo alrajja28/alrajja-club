@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { useContent } from '../backend/useContent';
+import {usePlayerCategories} from '../backend/usePlayerCategories';
+import type {Player} from './TeamTab';
+import {toAcademyPlayer} from '../data/academyPlayer';
 import { useMutation } from 'convex/react';
 import { clubApi } from '../backend/api';
 import {errorMessage} from '../backend/errors';
 import { LionLogo } from './LionLogo';
 import {
-  ACADEMY_PLAYERS,
   ACADEMY_SUB_FILTERS,
   ACADEMY_BANNER_INFO,
   AcademyPlayer,
@@ -19,10 +21,14 @@ interface AcademyScreenProps {
 export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu }) => {
   const announcements = useContent<{id:string;title:string;description?:string;image?:string}>('academy');
   // Main tabs: الأشبال | الناشئين | الشباب | الفريق الأول
-  const [activeMainTab, setActiveMainTab] = useState<'اشبال' | 'ناشئين' | 'شباب' | 'اول'>('اشبال');
+  const categories=usePlayerCategories();
+  const players=useContent<Player>('players');
+  const [selectedCategory,setSelectedCategory]=useState('cubs');
+  const activeCategory=categories.find(c=>c.slug===selectedCategory)??categories[0];
+  const activeMainTab=activeCategory?.slug??'';
 
   // Sub-filters (المواليد أو المراكز)
-  const [activeSubFilter, setActiveSubFilter] = useState<string>('2012');
+  const [activeSubFilter, setActiveSubFilter] = useState<string>('all');
 
   // Modal actions
   const [activeModal, setActiveModal] = useState<
@@ -45,32 +51,13 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
   const [registrationBusy,setRegistrationBusy] = useState(false);
   const registrationNonce=useRef(crypto.randomUUID());
 
-  // Switch category and update default subfilter accordingly
-  const handleCategoryChange = (tab: 'اشبال' | 'ناشئين' | 'شباب' | 'اول') => {
-    setActiveMainTab(tab);
-    if (tab === 'اشبال') {
-      setActiveSubFilter('2012');
-    } else if (tab === 'ناشئين') {
-      setActiveSubFilter('2010');
-    } else if (tab === 'شباب') {
-      setActiveSubFilter('2006');
-    } else if (tab === 'اول') {
-      setActiveSubFilter('all');
-    }
-  };
-
-  // Filter players dynamically
-  const filteredPlayers = ACADEMY_PLAYERS.filter((player) => {
-    if (player.category !== activeMainTab) return false;
-    if (activeMainTab === 'اول') {
-      if (activeSubFilter === 'all') return true;
-      return player.posGroup === activeSubFilter;
-    }
-    return player.subCategory === activeSubFilter;
-  });
-
-  const bannerInfo = ACADEMY_BANNER_INFO[activeMainTab];
-  const subFilters = ACADEMY_SUB_FILTERS[activeMainTab] || [];
+  const handleCategoryChange=(slug:string)=>{setSelectedCategory(slug);setActiveSubFilter('all');};
+  const categoryPlayers=players.filter(p=>(p.teamCategory??'first')===activeMainTab).map(p=>toAcademyPlayer(p,activeCategory?.title??''));
+  const filteredPlayers=categoryPlayers.filter(p=>activeSubFilter==='all'||(activeMainTab==='first'?p.posGroup===activeSubFilter:p.subCategory===activeSubFilter));
+  const bannerKey:Record<string,keyof typeof ACADEMY_BANNER_INFO>={first:'اول',youth:'شباب',juniors:'ناشئين',cubs:'اشبال'};
+  const baseBanner=ACADEMY_BANNER_INFO[bannerKey[activeMainTab]??'اشبال'];
+  const bannerInfo={...baseBanner,...(!bannerKey[activeMainTab]?{subtitle:'لاعبو هذه الفئة من بيانات إدارة النادي',coach:'',trainingDays:''}:{}),title:(activeCategory?.title??'فئات النادي')+' · نادي الرجاء العراقي'};
+  const subFilters=activeMainTab==='first'?ACADEMY_SUB_FILTERS.اول:[{id:'all',label:'كل المواليد'},...Array.from(new Set(categoryPlayers.map(p=>p.birthYear).filter(Boolean))).sort().reverse().map(year=>({id:year,label:'مواليد '+year}))];
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,18 +69,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
     finally {setRegistrationBusy(false);}
   };
 
-  const getCategoryTitleAr = () => {
-    switch (activeMainTab) {
-      case 'اشبال':
-        return 'فئة الأشبال';
-      case 'ناشئين':
-        return 'فئة الناشئين';
-      case 'شباب':
-        return 'فئة الشباب';
-      case 'اول':
-        return 'الفريق الأول لنادي الرجاء العراقي';
-    }
-  };
+  const getCategoryTitleAr=()=>activeCategory?.title??'فئات النادي';
 
   return (
     <div id="academy-screen" className="screen active">
@@ -115,32 +91,9 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
       </div>
 
       {/* شريط التبويبات الرئيسي (الأشبال / الناشئين / الشباب / الفريق الأول) */}
-      <div className="academy-tabs">
-        <button
-          className={`academy-tab-btn ${activeMainTab === 'اشبال' ? 'active' : ''}`}
-          onClick={() => handleCategoryChange('اشبال')}
-        >
-          الأشبال
-        </button>
-        <button
-          className={`academy-tab-btn ${activeMainTab === 'ناشئين' ? 'active' : ''}`}
-          onClick={() => handleCategoryChange('ناشئين')}
-        >
-          الناشئين
-        </button>
-        <button
-          className={`academy-tab-btn ${activeMainTab === 'شباب' ? 'active' : ''}`}
-          onClick={() => handleCategoryChange('شباب')}
-        >
-          الشباب
-        </button>
-        <button
-          className={`academy-tab-btn ${activeMainTab === 'اول' ? 'active' : ''}`}
-          onClick={() => handleCategoryChange('اول')}
-        >
-          الفريق الأول
-        </button>
-      </div>
+      <nav className="academy-tabs" aria-label="فئات الأكاديمية">
+        {categories.map(c=><button key={c.slug} className={'academy-tab-btn '+(activeMainTab===c.slug?'active':'')} aria-pressed={activeMainTab===c.slug} onClick={()=>handleCategoryChange(c.slug)}>{c.title}</button>)}
+      </nav>
 
       {/* شريط التصنيفات الفرعية (المواليد للفئات السنية أو المراكز للفريق الأول) */}
       <div className="academy-sub-filters">
@@ -263,7 +216,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                     </div>
                     <div className="absolute bottom-1.5 left-1.5 bg-[#070d1a]/80 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-[#ffd700] flex items-center gap-1 border border-white/10">
                       <i className="fa-solid fa-star text-[9px]"></i>
-                      <span>{player.rating}</span>
+                      <span>{player.rating??'—'}</span>
                     </div>
                   </div>
 
@@ -288,7 +241,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                         </span>
                       ) : (
                         <span className="text-[#8c96aa]">
-                          {player.matches} مباراة
+                          {player.matches??'—'} مباراة
                         </span>
                       )}
                       <span className="text-[9px] text-[#8c96aa]">
@@ -430,7 +383,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                 <div className="bg-[#121c2e] p-2.5 rounded-xl border border-white/5 text-center">
                   <span className="block text-[10px] text-[#8c96aa]">المباريات</span>
                   <span className="text-sm font-black font-mono text-white">
-                    {selectedPlayer.matches}
+                    {selectedPlayer.matches??'—'}
                   </span>
                 </div>
                 <div className="bg-[#121c2e] p-2.5 rounded-xl border border-white/5 text-center">
@@ -448,7 +401,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                 <div className="bg-[#121c2e] p-2.5 rounded-xl border border-white/5 text-center">
                   <span className="block text-[10px] text-[#8c96aa]">التقييم</span>
                   <span className="text-sm font-black font-mono text-[#ffd700]">
-                    ⭐ {selectedPlayer.rating}
+                    ⭐ {selectedPlayer.rating??'—'}
                   </span>
                 </div>
               </div>
@@ -457,7 +410,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
               <div className="w-full bg-[#121c2e] p-3 rounded-2xl border border-white/5 space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-[#8c96aa]">المواليد:</span>
-                  <span className="font-bold text-white">مواليد {selectedPlayer.birthYear}</span>
+                  <span className="font-bold text-white">مواليد {selectedPlayer.birthYear||'غير محدد'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#8c96aa]">الطول:</span>
@@ -465,7 +418,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#8c96aa]">القدم المفضلة:</span>
-                  <span className="font-bold text-white">{selectedPlayer.foot}</span>
+                  <span className="font-bold text-white">{selectedPlayer.foot??'—'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#8c96aa]">الميزة التكتيكية:</span>
