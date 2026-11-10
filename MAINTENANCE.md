@@ -1,9 +1,7 @@
-# Temporary maintenance
+# Maintenance mode
 
-Both customer sites display the maintenance screen before loading authentication or application services.
+Current status: disabled. The original application runs from src/bootstrap.tsx, with the database and authentication settings preserved.
 
-The original entry point is preserved in src/bootstrap.tsx. Application source, content and credentials are unchanged. This is a temporary UI gate, not encryption or a replacement for server authorization.
+To enable the maintenance screen, set MAINTENANCE_ENABLED=true in src/maintenance-config.ts, rebuild and publish. Maintenance styles load only when enabled.
 
-To reopen this site, set MAINTENANCE_ENABLED to false in src/maintenance-config.ts, build, and publish the generated dist to this repository's gh-pages branch. Reopen both sites separately.
-
-A full static maintenance shell and critical styles are included in index.html so the lock and message are visible even when JavaScript loads slowly. If disabling maintenance, remove the static shell and maintenance-critical style from index.html as well.
+To reopen, set the flag to false, remove any static maintenance shell and maintenance-critical styles from index.html, then rebuild and publish. The current index.html uses a neutral loading message.
