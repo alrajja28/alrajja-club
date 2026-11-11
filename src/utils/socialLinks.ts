@@ -84,7 +84,7 @@ export const openSocialPlatform = (
         social.url
       )};end`;
     } else if (social.id === 'twitter') {
-      intentUrl = `intent://twitter.com/ALRAJAA_IQ#Intent;package=com.twitter.android;scheme=https;S.browser_fallback_url=${encodeURIComponent(
+      intentUrl = `intent://${cleanUrl}#Intent;package=com.twitter.android;scheme=https;S.browser_fallback_url=${encodeURIComponent(
         social.url
       )};end`;
     } else if (social.id === 'tiktok') {

@@ -1,3 +1,4 @@
+import {useClubSettings} from '../backend/useClubSettings';
 import React, { useState, useEffect } from 'react';
 import { X, Volume2, VolumeX, Music, Heart } from 'lucide-react';
 import { CLUB_ANTHEM_LYRICS } from '../data/clubData';
@@ -8,19 +9,21 @@ interface AnthemModalProps {
 }
 
 export const AnthemModal: React.FC<AnthemModalProps> = ({ onClose }) => {
+  const settings=useClubSettings();
+  const lyrics=String(settings?.anthem??'').split('\n').filter(Boolean);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentLine, setCurrentLine] = useState(0);
-  const [likes, setLikes] = useState(1974);
+  const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
 
   // Synthesized cheering rhythm/chant simulation
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
-      setCurrentLine((prev) => (prev + 1) % CLUB_ANTHEM_LYRICS.length);
+      setCurrentLine((prev) => (prev + 1) % Math.max(1,lyrics.length));
     }, 3200);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying,lyrics.length]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
@@ -69,7 +72,7 @@ export const AnthemModal: React.FC<AnthemModalProps> = ({ onClose }) => {
             أهازيج جماهير أصحاب السعادة
           </span>
           <p className="text-base font-black text-white transition-all duration-300 transform scale-105">
-            "{CLUB_ANTHEM_LYRICS[currentLine]}"
+            "{lyrics[currentLine%Math.max(1,lyrics.length)]||'لم تُضف كلمات النشيد بعد'}"
           </p>
         </div>
 

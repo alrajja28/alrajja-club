@@ -1,3 +1,4 @@
+import {validatePrices} from './tickets';
 import { v, ConvexError } from 'convex/values';
 import { query, mutation } from './model';
 import { section } from './schema';
@@ -55,6 +56,8 @@ export const save = mutation({
     if (!args.data || typeof args.data !== 'object' || Array.isArray(args.data) || JSON.stringify(args.data).length > 60000)
       throw new ConvexError('بيانات المحتوى غير صالحة أو كبيرة');
     const data={...args.data};
+    if(['staff','management'].includes(args.section)){data.name=args.title.trim();if(typeof data.role!=='string'||!data.role.trim())throw new ConvexError('المنصب مطلوب');}
+    if(args.section==='matches'){if(data.ticketPrices!==undefined){validatePrices(data.ticketPrices);data.ticketPrice=data.ticketPrices.second;}if(data.ticketSalesEnabled!==undefined&&typeof data.ticketSalesEnabled!=='boolean')throw new ConvexError('حالة الحجز غير صالحة');}
     if(args.section==='players'){
       data.teamCategory??='first';await checkCategory(ctx,data.teamCategory);
       if(data.birthYear!==undefined&&(!Number.isInteger(data.birthYear)||data.birthYear<1900||data.birthYear>new Date().getUTCFullYear()))throw new ConvexError('سنة الميلاد غير صالحة');
@@ -62,7 +65,7 @@ export const save = mutation({
     if(args.section==='playerCategories'&&!args.published)throw new ConvexError('التصنيف يكون متاحًا أو ينتقل إلى المحذوفات');
     for(const key of ['price','ticketPrice'])if (args.data[key] !== undefined && (!Number.isFinite(args.data[key]) || args.data[key] < 0))
       throw new ConvexError('السعر يجب أن يكون رقمًا موجبًا أو صفرًا');
-    for (const key of ['url', 'image', 'imgSrc', 'imgUrl', 'videoUrl', 'streamUrl']) {
+    for (const key of ['url', 'image', 'imgSrc', 'imgUrl', 'videoUrl', 'streamUrl','opponentLogo','facebook','instagram','twitter','tiktok']) {
       if (args.data[key]) {
         try { if (new URL(args.data[key]).protocol !== 'https:') throw new Error(); }
         catch { throw new ConvexError('روابط الصور والفيديو يجب أن تبدأ بـ https://'); }

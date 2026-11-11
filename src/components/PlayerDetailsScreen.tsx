@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
 export interface PlayerDetailsData {
+  biography?:string;
+  gameLog?:string;
+  foot?:string;
+  contractUntil?:string;
   id?: string;
   name: string;
   number: number;
@@ -30,30 +34,16 @@ export const PlayerDetailsScreen: React.FC<PlayerDetailsScreenProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'matches' | 'stats' | 'info'>('stats');
 
-  // Default values matching template 7: عبدالله حبيب رقم 7 وسط
-  const current = player || {
-    name: 'عبدالله حبيب',
-    number: 7,
-    position: 'وسط',
-    imgUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80',
-    height: '178',
-    weight: '72',
-    age: 22,
-    matches: 12,
-    goals: 4,
-    assists: 7,
-    yellowCards: 2,
-    rating: '7.6',
-  };
+  const current:PlayerDetailsData=player||{name:'لاعب غير متاح',number:0,position:''};
 
-  const cleanHeight = current.height ? current.height.replace(/[^\d]/g, '') || '178' : '178';
-  const cleanWeight = current.weight ? current.weight.replace(/[^\d]/g, '') || '72' : '72';
-  const cleanAge = current.age || 22;
-  const cleanMatches = current.matches !== undefined ? current.matches : 12;
-  const cleanGoals = current.goals !== undefined ? current.goals : 4;
-  const cleanAssists = current.assists !== undefined ? current.assists : 7;
-  const cleanYellowCards = current.yellowCards !== undefined ? current.yellowCards : 2;
-  const cleanRating = current.rating || '7.6';
+  const cleanHeight = current.height ? current.height.replace(/[^\d]/g, '') || '—' : '—';
+  const cleanWeight = current.weight ? current.weight.replace(/[^\d]/g, '') || '—' : '—';
+  const cleanAge = current.age ?? '—';
+  const cleanMatches = current.matches !== undefined ? current.matches : '—';
+  const cleanGoals = current.goals !== undefined ? current.goals : '—';
+  const cleanAssists = current.assists !== undefined ? current.assists : '—';
+  const cleanYellowCards = current.yellowCards !== undefined ? current.yellowCards : '—';
+  const cleanRating = current.rating ?? '—';
 
   return (
     <div id="player-details-screen" className="screen active fade-in-screen">
@@ -79,7 +69,7 @@ export const PlayerDetailsScreen: React.FC<PlayerDetailsScreenProps> = ({
             <img
               src={
                 current.imgUrl ||
-                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80'
+                `${import.meta.env.BASE_URL}rajaa-logo.png`
               }
               alt={current.name}
             />
@@ -174,50 +164,23 @@ export const PlayerDetailsScreen: React.FC<PlayerDetailsScreenProps> = ({
           </div>
         )}
 
-        {activeTab === 'matches' && (
-          <div className="stats-container">
-            <div className="section-title">سجل مشاركات اللاعب</div>
-            <div className="flex flex-col gap-2.5">
-              <div className="bg-[#121c2e] p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span className="text-white font-bold">الرجاء العراقي 2 - 0 النجوم</span>
-                </div>
-                <span className="text-[#8c96aa]">90 دقيقة · تقييم 8.2</span>
-              </div>
-              <div className="bg-[#121c2e] p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span className="text-white font-bold">الرجاء العراقي 1 - 1 الزوراء</span>
-                </div>
-                <span className="text-[#8c96aa]">84 دقيقة · أسيست</span>
-              </div>
-              <div className="bg-[#121c2e] p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                  <span className="text-white font-bold">الرجاء العراقي 0 - 1 الكرخ</span>
-                </div>
-                <span className="text-[#8c96aa]">90 دقيقة · بطاقة صفراء</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab==='matches'&&<div className="stats-container"><h3 className="section-title">سجل مشاركات اللاعب</h3><p className="bg-[#121c2e] p-4 rounded-2xl text-sm whitespace-pre-line">{current.gameLog||'لم يُضف سجل المشاركات بعد.'}</p></div>}
 
         {activeTab === 'info' && (
           <div className="stats-container">
             <div className="section-title">السيرة والمسيرة الرياضية</div>
             <div className="bg-[#121c2e] p-4 rounded-2xl border border-white/5 text-xs text-[#8c96aa] space-y-3 leading-relaxed">
               <p>
-                انضم اللاعب إلى صفوف الفريق الأول لنادي الرجاء العراقي قادماً من أكاديمية النادي، ويعد أحد أبرز المواهب الشابة الصاعدة في خط الوسط لما يتميز به من دقة التمرير وصناعة اللعب.
+                {current.biography||'لم تُضف السيرة بعد.'}
               </p>
               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/5 text-white">
                 <div>
                   <span className="text-[10px] text-[#8c96aa] block">القدم المفضلة</span>
-                  <span className="font-bold">اليمنى</span>
+                  <span className="font-bold">{current.foot||'—'}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-[#8c96aa] block">العقد حتى</span>
-                  <span className="font-bold">يونيو 2028</span>
+                  <span className="font-bold">{current.contractUntil||'—'}</span>
                 </div>
               </div>
             </div>

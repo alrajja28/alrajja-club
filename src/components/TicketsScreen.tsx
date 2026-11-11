@@ -1,8 +1,10 @@
+import {useContent} from '../backend/useContent';
+import {TICKET_TIERS,ticketPrices} from '../data/ticketPricing';
 import React, { useRef, useState } from 'react';
 import {useMutation} from 'convex/react';
 import {clubApi} from '../backend/api';
 import {errorMessage} from '../backend/errors';
-import { Match, UPCOMING_MATCH } from '../data/clubData';
+import { Match } from '../data/clubData';
 import { CheckCircle } from 'lucide-react';
 import { LionLogo } from './LionLogo';
 
@@ -31,18 +33,17 @@ interface TicketsScreenProps {
 }
 
 export const TicketsScreen: React.FC<TicketsScreenProps> = ({
-  match = UPCOMING_MATCH,
+  match: selectedMatch,
   onBack,
   onOpenMenu,
   onSuccessBooking,
 }) => {
-  // Ticket tiers as specified in Template 9: VIP, درجة أولى, درجة ثانية, درجة ثالثة
-  const [tiers, setTiers] = useState<TicketTier[]>([
-    { id: 'vip', name: 'VIP', price: Math.round((match?.ticketPrice??0)*2.5), color: '#ffd700', qty: 0 },
-    { id: 'first', name: 'درجة أولى', price: Math.round((match?.ticketPrice??0)*1.5), color: '#e30613', qty: 0 },
-    { id: 'second', name: 'درجة ثانية', price: match?.ticketPrice??0, color: '#10b981', qty: 1 },
-    { id: 'third', name: 'درجة ثالثة', price: Math.round((match?.ticketPrice??0)*.5), color: '#3b82f6', qty: 0 },
-  ]);
+  const matches=useContent<Match>('matches');
+  const match=matches.find(m=>m.id===selectedMatch?.id)??(!selectedMatch?matches.find(m=>m.status!=='finished'&&m.ticketSalesEnabled!==false):undefined);
+  const available=!!match&&match.status!=='finished'&&match.ticketSalesEnabled!==false;
+  const [quantities,setQuantities]=useState<Record<string,number>>({second:1});
+  const prices=ticketPrices(match??{});
+  const tiers:TicketTier[]=TICKET_TIERS.map(t=>({...t,price:prices[t.id],qty:quantities[t.id]??0}));
 
   const [bookingSuccess, setBookingSuccess] = useState<any>(null);
   const submitRequest=useMutation(clubApi.submissions.submit);
@@ -51,15 +52,7 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
   const [error,setError]=useState('');
 
   const updateQty = (id: string, delta: number) => {
-    setTiers((prev) =>
-      prev.map((tier) => {
-        if (tier.id === id) {
-          const newQty = Math.min(20,Math.max(0, tier.qty + delta));
-          return { ...tier, qty: newQty };
-        }
-        return tier;
-      })
-    );
+    setQuantities(prev=>({...prev,[id]:Math.min(20,Math.max(0,(prev[id]??0)+delta))}));
   };
 
   // Calculate total price and count
@@ -67,7 +60,7 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
   const totalSeats = tiers.reduce((acc, curr) => acc + curr.qty, 0);
 
   const handleCheckout = async () => {
-    setError('');if(totalSeats<1||totalSeats>20){setError('اختر بين مقعد واحد و20 مقعدًا');return;}
+    setError('');if(!available){setError('الحجز غير متاح حاليًا');return;}if(totalSeats<1||totalSeats>20){setError('اختر بين مقعد واحد و20 مقعدًا');return;}
     setBusy(true);try{
       const row=await submitRequest({kind:'tickets',nonce:nonce.current,data:{matchId:match?.id,quantities:Object.fromEntries(tiers.map(t=>[t.id,t.qty]))}});
       const booking={...row.data,id:row._id,status:row.status,code:row._id.slice(-8).toUpperCase()};
@@ -94,7 +87,7 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
         ></i>
       </div>
 
-      <div className="tickets-content">
+      <div className="tickets-content">{!available&&<p role="status" className="p-4 text-center text-[#d4af37]">لا توجد تذاكر متاحة للحجز لهذه المباراة حاليًا.</p>}
         {/* معلومات المباراة العلوية */}
         <div className="ticket-match-info">
           <div className="t-teams-row">
@@ -174,7 +167,7 @@ export const TicketsScreen: React.FC<TicketsScreenProps> = ({
           </span>
         </div>
         {error&&<p role="alert" className="text-red-300 text-xs mb-2">{error}</p>}
-        <button disabled={busy}
+        <button disabled={busy||!available}
           className="btn-primary"
           style={{ width: '100%', borderRadius: '15px' }}
           onClick={handleCheckout}

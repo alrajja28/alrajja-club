@@ -120,8 +120,8 @@ describe('fan requests',()=>{
 describe('content deletion and editable player categories',()=>{
   it('removes every content section from active lists and restores it without losing its data',async()=>{
     const {t,actor}=await createActor('alrajja28@gmail.com');
-    for(const section of ['products','news','media','stream','matches','players','academy','settings','standings']){
-      const record={...product,section,slug:'delete-'+section,published:true,data:section==='players'?{name:'Existing player'}:{price:12000}};
+    for(const section of ['products','news','media','stream','matches','players','academy','settings','standings','staff','management']){
+      const record={...product,section,slug:'delete-'+section,published:true,data:section==='players'?{name:'Existing player'}:{price:12000,role:'Test role'}};
       await actor.mutation(api.content.save,record);
       const [row]=await actor.query(api.content.listAdmin,{section});
       await expect(t.mutation(api.content.remove,{id:row._id})).rejects.toThrow('تصريح');
@@ -177,4 +177,61 @@ describe('content deletion and editable player categories',()=>{
     await expect(fan.mutation(api.content.removeCategory,{slug:'first'})).rejects.toThrow('تصريح');
     await expect(fan.query(api.content.listAdmin,{section:'players',trashed:true})).rejects.toThrow('تصريح');
   });
+});
+
+
+describe('people migration and ticket management',()=>{
+  it('migrates existing people once and never reintroduces a deleted name',async()=>{
+    const {t,actor}=await createActor('alrajja28@gmail.com');
+    await t.mutation(api.bootstrap.migratePeople,{});
+    const staff=await actor.query(api.content.listAdmin,{section:'staff'});
+    expect(staff).toHaveLength(10);
+    expect(await t.query(api.content.listPublished,{section:'management'})).toHaveLength(5);
+    await actor.mutation(api.content.remove,{id:staff[0]._id});
+    await t.mutation(api.bootstrap.migratePeople,{});
+    expect(await t.query(api.content.listPublished,{section:'staff'})).toHaveLength(9);
+    expect(await actor.query(api.content.listAdmin,{section:'staff',trashed:true})).toHaveLength(1);
+  });
+  it('uses admin prices, protects bookings, and closes sales on the server',async()=>{
+    const {t,actor}=await createActor('alrajja28@gmail.com');
+    const fan=t.withIdentity({...googleIdentity,subject:'ticket-fan',email:'fan@example.com'});
+    await fan.mutation(api.identity.ensureUser,{});
+    await actor.mutation(api.content.save,{section:'matches',slug:'custom-tickets',title:'Match',published:true,sort:0,data:{opponent:'Test',status:'upcoming',ticketPrice:10000,date:'Tomorrow',stadium:'Club'}});
+    const [match]=await actor.query(api.content.listAdmin,{section:'matches'});
+    const prices={vip:40000,first:22000,second:12000,third:7000};
+    await expect(fan.mutation(api.tickets.saveSettings,{id:match._id,prices,enabled:true})).rejects.toThrow('تصريح');
+    await expect(actor.mutation(api.tickets.saveSettings,{id:match._id,prices:{...prices,vip:-1},enabled:true})).rejects.toThrow('السعر');
+    await actor.mutation(api.tickets.saveSettings,{id:match._id,prices,enabled:true});
+    const request={kind:'tickets',nonce:'custom-price',data:{matchId:match.slug,quantities:{vip:1,third:2},total:1}};
+    const booked=await fan.mutation(api.submissions.submit,request);
+    expect(booked.data.total).toBe(54000);
+    await fan.mutation(api.submissions.submit,{kind:'contact',nonce:'other-request',data:{details:'Contact request'}});
+    expect(await actor.query(api.submissions.listAdmin,{kind:'tickets'})).toHaveLength(1);
+    await actor.mutation(api.tickets.saveSettings,{id:match._id,prices:{...prices,vip:50000},enabled:false});
+    expect((await fan.query(api.submissions.mine,{})).find((r:any)=>r._id===booked._id).data.total).toBe(54000);
+    expect((await fan.mutation(api.submissions.submit,request))._id).toBe(booked._id);
+    await expect(fan.mutation(api.submissions.submit,{...request,nonce:'closed-sales'})).rejects.toThrow('غير متاح');
+    const [updated]=await actor.query(api.content.listAdmin,{section:'matches'});
+    expect(updated.data.opponent).toBe('Test');expect(updated.data.ticketPrice).toBe(12000);
+    await actor.mutation(api.content.archive,{id:match._id});
+    await expect(actor.mutation(api.tickets.saveSettings,{id:match._id,prices,enabled:true})).rejects.toThrow('منشورة');
+  });
+});
+
+
+describe('managed club content migration',()=>{
+ it('preserves customer settings and edits and never restores deleted content',async()=>{
+  const {t,actor}=await createActor('alrajja28@gmail.com');
+  await actor.mutation(api.content.save,{...product,section:'settings',slug:'club',title:'Customer club',data:{phone:'existing',slogan:'Customer slogan'},published:true});
+  await t.mutation(api.bootstrap.migrateManagedContent,{});
+  const [settings]=await actor.query(api.content.listAdmin,{section:'settings'});
+  expect(settings.data.phone).toBe('existing');expect(settings.data.slogan).toBe('Customer slogan');
+  expect(settings.data.instagram).toContain('https://');
+  const pages=await actor.query(api.content.listAdmin,{section:'pages'});expect(pages.length).toBeGreaterThan(10);
+  await actor.mutation(api.content.remove,{id:pages[0]._id});
+  await t.mutation(api.bootstrap.migrateManagedContent,{});
+  expect(await actor.query(api.content.listAdmin,{section:'pages'})).toHaveLength(pages.length-1);
+  await expect(actor.mutation(api.content.save,{...product,section:'staff',data:{name:'Name'}})).rejects.toThrow('المنصب');
+  await expect(actor.mutation(api.content.save,{...product,section:'matches',data:{ticketPrices:{vip:-1}}})).rejects.toThrow('السعر');
+ });
 });

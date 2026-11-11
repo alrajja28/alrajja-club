@@ -1,3 +1,6 @@
+import {useClubSettings} from '../backend/useClubSettings';
+import {ClubName} from './ClubName';
+import {useSocialLinks} from '../backend/useSocialLinks';
 import React from 'react';
 import { LionLogo } from './LionLogo';
 import { OFFICIAL_SOCIAL_LINKS, openSocialPlatform } from '../utils/socialLinks';
@@ -29,8 +32,9 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
   onOpenProfile,
   onLogout,
 }) => {
+  const settings=useClubSettings();
+  const socialLinks=useSocialLinks();
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
       {/* Backdrop */}
@@ -51,7 +55,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
               ✕
             </button>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-sm text-white">نادي الرجاء العراقي</span>
+              <span className="font-extrabold text-sm text-white"><ClubName/></span>
               <LionLogo size={28} />
             </div>
           </div>
@@ -72,7 +76,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
               <div className="text-[10px] text-[#d4af37] font-semibold mt-0.5 flex items-center gap-1">
                 <span>{userRole}</span>
                 <span>•</span>
-                <span>1,450 نقطة</span>
+                <span>{userRole}</span>
               </div>
             </div>
           </div>
@@ -160,11 +164,11 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
             <div className="px-3 py-2 text-xs text-[#8c96aa] space-y-1.5 leading-relaxed bg-[#121c2e]/40 rounded-xl">
               <div className="flex justify-between">
                 <span>الملعب:</span>
-                <span className="text-white">ملعب الشعب الدولي / ملعب الرجاء</span>
+                <span className="text-white">{settings?.stadium||'—'}</span>
               </div>
               <div className="flex justify-between">
                 <span>اللقب:</span>
-                <span className="text-[#d4af37]">فرسان الرافدين</span>
+                <span className="text-[#d4af37]">{settings?.nickname||'—'}</span>
               </div>
             </div>
           </div>
@@ -185,7 +189,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
           {/* حسابات النادي الرسمية */}
           <div className="flex items-center justify-center gap-2.5 pt-1">
-            {OFFICIAL_SOCIAL_LINKS.map((social) => (
+            {socialLinks.map((social) => (
               <a
                 key={social.id}
                 href={social.url}

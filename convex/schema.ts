@@ -5,7 +5,7 @@ import { authTables } from '@convex-dev/auth/server';
 export const section = v.union(
   v.literal('products'), v.literal('news'), v.literal('media'),
   v.literal('stream'), v.literal('matches'), v.literal('players'),
-  v.literal('academy'), v.literal('settings'), v.literal('standings'), v.literal('playerCategories'),
+  v.literal('academy'), v.literal('settings'), v.literal('standings'), v.literal('playerCategories'), v.literal('staff'), v.literal('management'), v.literal('pages'),
 );
 
 export default defineSchema({

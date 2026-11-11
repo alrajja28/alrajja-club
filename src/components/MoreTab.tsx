@@ -1,3 +1,6 @@
+import {ClubName} from './ClubName';
+import {useSocialLinks} from '../backend/useSocialLinks';
+import {ManagedCards} from './ManagedCards';
 import React, { useRef, useState } from 'react';
 import {useMutation} from 'convex/react';
 import {clubApi} from '../backend/api';
@@ -51,7 +54,7 @@ export const MoreTab: React.FC<MoreTabProps> = ({
   onOpenTickets,
   onOpenAcademy,
   onLogout,
-  userName = 'سلطان الشامسي',
+  userName = 'زائر',
   userRole = 'مشجع مخلص',
 }) => {
   // Modal state for the 9 menu links
@@ -79,6 +82,7 @@ export const MoreTab: React.FC<MoreTabProps> = ({
     setActiveModal(key);
   };
 
+  const socialLinks=useSocialLinks();
   return (
     <div id="more-screen" className="screen active">
       {/* الترويسة العلوية */}
@@ -110,15 +114,15 @@ export const MoreTab: React.FC<MoreTabProps> = ({
             <LionLogo size={36} />
           </div>
           <div className="user-info">
-            <h3 className="user-name">نادي الرجاء العراقي</h3>
+            <h3 className="user-name"><ClubName/></h3>
             <span className="user-badge">{userRole} · {userName}</span>
           </div>
         </div>
 
         {/* شعار النادي */}
         <div className="club-slogan-box">
-          <p>معاً دائماً... جمهورنا هو قوتنا الحقيقية</p>
-          <span className="slogan-hashtag">#الرجاء_العراقي</span>
+          <p>{(contact as any)?.slogan}</p>
+          <span className="slogan-hashtag">{(contact as any)?.hashtag}</span>
         </div>
 
         {/* قائمة الخدمات والروابط */}
@@ -240,7 +244,7 @@ export const MoreTab: React.FC<MoreTabProps> = ({
 
         {/* روابط التواصل الاجتماعي الرسمية لنادي الرجاء العراقي */}
         <div className="social-links-footer">
-          {OFFICIAL_SOCIAL_LINKS.map((social) => (
+          {socialLinks.map((social) => (
             <a
               key={social.id}
               href={social.url}
@@ -300,165 +304,22 @@ export const MoreTab: React.FC<MoreTabProps> = ({
             </div>
 
             {/* Modal Body: 1. عن النادي */}
-            {activeModal === 'about' && (
-              <div className="space-y-3 text-xs leading-relaxed text-[#c3cad9]">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#121c2e] border border-white/10 flex items-center justify-center mb-2">
-                  <LionLogo size={42} />
-                </div>
-                <p className="font-bold text-white text-center text-sm">
-                  نادي الرجاء العراقي الرياضي
-                </p>
-                <p>
-                  نادي الرجاء العراقي صرح رياضي رائد يجمع بين التفوق في المنافسات وبناء أجيال من الرياضيين المتميزين بالروح العالية والانضباط.
-                </p>
-                <div className="bg-[#121c2e] p-3 rounded-xl border border-white/5 space-y-1.5">
-                  <div className="flex justify-between">
-                    <span className="text-[#8c96aa]">اللقب الرسمي:</span>
-                    <span className="font-bold text-[var(--primary-red)]">فرسان الرافدين</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#8c96aa]">الألوان الأساسية:</span>
-                    <span className="font-bold text-white">الأحمر والأسود والأبيض</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#8c96aa]">الملعب:</span>
-                    <span className="font-bold text-white">ملعب الشعب الدولي</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            {activeModal === 'about' && <ManagedCards category="about"/>}
 
             {/* Modal Body: 2. الإدارة */}
-            {activeModal === 'management' && (
-              <div className="space-y-2 text-xs">
-                <p className="text-[#8c96aa] mb-2">
-                  مجلس إدارة النادي والإشراف العام على الأنشطة الرياضية:
-                </p>
-                {[
-                  { role: 'رئيس مجلس الإدارة', name: 'سعادة راشد المنصوري' },
-                  { role: 'نائب الرئيس', name: 'سعادة خالد العامري' },
-                  { role: 'المدير التنفيذي', name: 'د. طارق الحوسني' },
-                  { role: 'المشرف العام على الفريق', name: 'كابتن إسماعيل مطر' },
-                  { role: 'المدير الفني الأول', name: 'المدرب أرنو بوسيكي' },
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="p-2.5 rounded-xl bg-[#121c2e] border border-white/5 flex justify-between items-center"
-                  >
-                    <div>
-                      <div className="font-bold text-white">{item.name}</div>
-                      <div className="text-[10px] text-[#8c96aa]">{item.role}</div>
-                    </div>
-                    <i className="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
-                  </div>
-                ))}
-              </div>
-            )}
+            {activeModal === 'management' && <ManagedCards section="management"/>}
 
             {/* Modal Body: 3. الملعب والمرافق */}
-            {activeModal === 'stadium' && (
-              <div className="space-y-3 text-xs">
-                <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5 space-y-1.5">
-                  <h4 className="font-bold text-white text-sm">استاد آل نهيان الدولي</h4>
-                  <p className="text-[#8c96aa]">الملعب الرئيسي لقلعة العنابي، مجهز بأحدث معايير الفيفا الدولية وتقنية التبريد الذكية.</p>
-                  <div className="grid grid-cols-2 gap-2 pt-2 text-[11px]">
-                    <div className="bg-black/30 p-2 rounded-lg">
-                      <span className="text-[#8c96aa] block">السعة الجماهيرية:</span>
-                      <span className="font-bold text-white">15,000 مقعد</span>
-                    </div>
-                    <div className="bg-black/30 p-2 rounded-lg">
-                      <span className="text-[#8c96aa] block">نوع الأرضية:</span>
-                      <span className="font-bold text-white">عشب هجين طبيعي</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5 space-y-1 text-[#c3cad9]">
-                  <h5 className="font-bold text-white">المرافق الملحقة:</h5>
-                  <p>• مجمع المسابح الأولمبية والصالة الرياضية المغلقة</p>
-                  <p>• عيادة النادي للتأهيل الطبي والطب الرياضي</p>
-                  <p>• متجر النادي والمتحف التاريخي للكؤوس</p>
-                </div>
-              </div>
-            )}
+            {activeModal === 'stadium' && <ManagedCards category="stadium"/>}
 
             {/* Modal Body: 4. البطولات */}
-            {activeModal === 'trophies' && (
-              <div className="space-y-2 text-xs">
-                {[
-                  { title: 'دوري المحترفين', count: '4 ألقاب', years: '1999, 2001, 2005, 2010' },
-                  { title: 'كأس رئيس الدولة', count: '2 ألقاب', years: '2000, 2017' },
-                  { title: 'كأس السوبر', count: '3 ألقاب', years: '2002, 2011, 2018' },
-                  { title: 'كأس الرابطة للمحترفين', count: '2 ألقاب', years: '2016, 2018' },
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-[#121c2e] rounded-xl border border-white/5 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Trophy className="w-5 h-5 text-[#ffd700]" />
-                      <div>
-                        <div className="font-bold text-white">{item.title}</div>
-                        <div className="text-[10px] text-[#8c96aa]">{item.years}</div>
-                      </div>
-                    </div>
-                    <span className="font-black text-xs text-[var(--primary-red)] bg-[var(--primary-red)]/10 px-2 py-0.5 rounded-full">
-                      {item.count}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {activeModal === 'trophies' && <ManagedCards category="trophies"/>}
 
             {/* Modal Body: 5. الإحصائيات */}
-            {activeModal === 'stats' && (
-              <div className="space-y-2.5 text-xs">
-                <div className="grid grid-cols-2 gap-2 text-center">
-                  <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5">
-                    <span className="text-[11px] text-[#8c96aa] block">الانتصارات</span>
-                    <span className="text-lg font-black text-emerald-400">14 فوز</span>
-                  </div>
-                  <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5">
-                    <span className="text-[11px] text-[#8c96aa] block">الأهداف المسجلة</span>
-                    <span className="text-lg font-black text-white">41 هدف</span>
-                  </div>
-                  <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5">
-                    <span className="text-[11px] text-[#8c96aa] block">الشباك النظيفة</span>
-                    <span className="text-lg font-black text-[#ffd700]">7 مباريات</span>
-                  </div>
-                  <div className="p-3 bg-[#121c2e] rounded-xl border border-white/5">
-                    <span className="text-[11px] text-[#8c96aa] block">نسبة الاستحواذ</span>
-                    <span className="text-lg font-black text-cyan-400">58.4%</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            {activeModal === 'stats' && <ManagedCards category="stats"/>}
 
             {/* Modal Body: 6. الوثائق والعقود */}
-            {activeModal === 'documents' && (
-              <div className="space-y-2 text-xs">
-                {[
-                  { name: 'ميثاق جماهير نادي الرجاء العراقي 2026', size: '1.4 MB' },
-                  { name: 'لائحة عضوية النادي وبطاقة المشجع', size: '820 KB' },
-                  { name: 'شروط استخدام المرافق والملاعب الفرعية', size: '2.1 MB' },
-                  { name: 'سياسة الخصوصية وحماية بيانات المشجعين', size: '450 KB' },
-                ].map((doc, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-[#121c2e] rounded-xl border border-white/5 flex items-center justify-between hover:bg-[#18253d] transition-colors cursor-pointer"
-                    onClick={() => showToast(`جاري تنزيل: ${doc.name}`)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-cyan-400" />
-                      <div>
-                        <div className="font-bold text-white">{doc.name}</div>
-                        <div className="text-[10px] text-[#8c96aa]">{doc.size} · PDF</div>
-                      </div>
-                    </div>
-                    <i className="fa-solid fa-download text-xs text-[#8c96aa]"></i>
-                  </div>
-                ))}
-              </div>
-            )}
+            {activeModal === 'documents' && <ManagedCards category="documents"/>}
 
             {/* Modal Body: 7. تقديم طلب */}
             {activeModal === 'request' && (

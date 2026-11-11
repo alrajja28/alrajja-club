@@ -254,7 +254,7 @@ export const MediaScreen: React.FC<MediaScreenProps> = ({
                 loading="lazy"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
-                    'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&auto=format&fit=crop';
+                    `${import.meta.env.BASE_URL}rajaa-logo.png`;
                 }}
               />
               <div className="media-badge">

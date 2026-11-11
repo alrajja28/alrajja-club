@@ -1,9 +1,12 @@
+import {useClubSettings} from '../backend/useClubSettings';
+type ClubPerson={id:string;name:string;role:string;scope?:string;nationality?:string;experience?:string;imgUrl?:string};
 import { useContent } from '../backend/useContent';
 import {usePlayerCategories} from '../backend/usePlayerCategories';
 import React, { useState } from 'react';
 import { LionLogo } from './LionLogo';
 
 export interface Player {
+  specialSkill?:string;
   id: string;
   teamCategory?:string;
   birthYear?:number;
@@ -38,6 +41,7 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
   // Exact players from Template 6 specification + extended squad
+  const settings=useClubSettings();
   const playersData: Player[] = useContent<Player>('players');
 
   // Filtering players by position
@@ -48,22 +52,10 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
   });
 
   // Technical Staff
-  const technicalStaff = [
-    { title: 'المدير الفني', name: 'غوران توميتش', nationality: 'كرواتيا', experience: '15 سنة' },
-    { title: 'مساعد المدرب', name: 'كريم البصري', nationality: 'العراق', experience: '10 سنوات' },
-    { title: 'مدرب الحراس', name: 'ماركو بيريز', nationality: 'إسبانيا', experience: '12 سنة' },
-    { title: 'المعد البدني', name: 'جيروم ديبوا', nationality: 'فرنسا', experience: '8 سنوات' },
-    { title: 'طبيب الفريق', name: 'د. حسام السعدي', nationality: 'العراق', experience: '14 سنة' },
-  ];
+  const technicalStaff = useContent<ClubPerson>('staff').filter(p=>p.scope!=='academy');
 
   // Board Management
-  const boardManagement = [
-    { role: 'رئيس مجلس الإدارة', name: 'الشيخ ذياب بن زايد آل نهيان' },
-    { role: 'نائب الرئيس', name: 'سعادة راشد الزعابي' },
-    { role: 'المدير التنفيذي للشركة الرياضية', name: 'خالد السركال' },
-    { role: 'مدير شؤون الاحتراف', name: 'فهد مسعود' },
-    { role: 'المشرف العام على الفريق', name: 'عبدالباسط محمد' },
-  ];
+  const boardManagement = useContent<ClubPerson>('management');
 
   return (
     <div id="players-screen" className="screen active fade-in-screen">
@@ -190,150 +182,29 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
         </div>
       )}
 
-      {/* Main Tab 2: Formation (التشكيلة التكتيكية على أرض الملعب) */}
-      {mainTab === 'formation' && (
-        <div className="flex-1 overflow-y-auto p-4 pb-24 fade-in-screen">
-          <div className="bg-[#121c2e] border border-white/5 rounded-2xl p-4 text-center mb-4">
-            <span className="text-xs text-[#8c96aa] font-semibold">الخطة التكتيكية المعتمدة</span>
-            <h3 className="text-xl font-black text-white mt-1">4 - 3 - 3 هجومية</h3>
-            <p className="text-xs text-[#e30613] font-bold mt-0.5">تشكيلة لقاء الجمعة ضد نادي الشاوي</p>
-          </div>
-
-          {/* Pitch canvas visual */}
-          <div className="relative w-full aspect-[3/4] bg-emerald-900/60 border-2 border-white/30 rounded-2xl overflow-hidden p-3 shadow-inner flex flex-col justify-between">
-            {/* Pitch markings */}
-            <div className="absolute inset-x-0 top-1/2 h-[1px] bg-white/20 -translate-y-1/2" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border border-white/20 rounded-full" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-16 border-b border-x border-white/20 rounded-b-lg" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-36 h-16 border-t border-x border-white/20 rounded-t-lg" />
-
-            {/* Attackers (3) */}
-            <div className="flex justify-around items-center pt-2 z-10">
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#e30613] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  10
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  منتظر رحيم
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#e30613] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  70
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  عمر خربين
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#e30613] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  11
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  سيباستيان
-                </span>
-              </div>
-            </div>
-
-            {/* Midfielders (3) */}
-            <div className="flex justify-around items-center z-10 my-auto">
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  7
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  عبدالله حبيب
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  88
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  أحمد نور الله
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  8
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  أمير علي
-                </span>
-              </div>
-            </div>
-
-            {/* Defenders (4) */}
-            <div className="flex justify-around items-center z-10">
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  2
-                </span>
-                <span className="text-[9px] text-white font-bold bg-black/60 px-1 py-0.5 rounded mt-1">
-                  أحمد ماجد
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  4
-                </span>
-                <span className="text-[9px] text-white font-bold bg-black/60 px-1 py-0.5 rounded mt-1">
-                  علي
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  5
-                </span>
-                <span className="text-[9px] text-white font-bold bg-black/60 px-1 py-0.5 rounded mt-1">
-                  عباس
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#121c2e] text-white font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  12
-                </span>
-                <span className="text-[9px] text-white font-bold bg-black/60 px-1 py-0.5 rounded mt-1">
-                  سجاد
-                </span>
-              </div>
-            </div>
-
-            {/* Goalkeeper (1) */}
-            <div className="flex justify-center items-center pb-2 z-10">
-              <div className="flex flex-col items-center">
-                <span className="w-8 h-8 rounded-full bg-[#d4af37] text-black font-extrabold text-xs flex items-center justify-center border-2 border-white shadow">
-                  1
-                </span>
-                <span className="text-[10px] text-white font-bold bg-black/60 px-1.5 py-0.5 rounded mt-1">
-                  موسى إياد (GK)
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {mainTab==='formation'&&<div className="flex-1 overflow-y-auto p-4 pb-24"><h3 className="text-center font-bold mb-4">{settings?.formation||'التشكيلة الأساسية'}</h3><div className="rounded-3xl border border-white/20 bg-emerald-950 p-5 space-y-10 min-h-96">{['هجوم','وسط','دفاع','حراس'].map(position=><div key={position} className="flex justify-around gap-2">{playersData.filter((p:any)=>p.starting==='yes'&&p.position===position).map(p=><button key={p.id} onClick={()=>{if(onSelectPlayer)onSelectPlayer(p);else setSelectedPlayer(p);}} className="flex flex-col items-center text-xs"><span className="rounded-full bg-[#e30613] w-9 h-9 grid place-items-center font-bold">{p.number}</span><span>{p.name}</span></button>)}</div>)}</div>{!playersData.some((p:any)=>p.starting==='yes')&&<p className="text-center text-sm p-4 text-[#8c96aa]">لم تُعلن التشكيلة بعد.</p>}</div>}
 
       {/* Main Tab 3: Technical Staff */}
       {mainTab === 'staff' && (
         <div className="flex-1 overflow-y-auto p-4 pb-24 space-y-3 fade-in-screen">
           <div className="text-right mb-2">
             <h3 className="font-extrabold text-base text-white">الجهاز الفني والإداري</h3>
-            <p className="text-xs text-[#8c96aa]">الكادر التدريبي لقيادة نادي الرجاء العراقي 2025 - 2026</p>
+            <p className="text-xs text-[#8c96aa]">الكادر التدريبي لقيادة النادي</p>
           </div>
 
-          {technicalStaff.map((staff, i) => (
+          {!technicalStaff.length&&<p className="text-center text-sm text-[#8c96aa]">لا يوجد كادر منشور حاليًا.</p>}
+          {technicalStaff.map((staff) => (
             <div
-              key={i}
+              key={staff.id}
               className="bg-[#121c2e] border border-white/5 rounded-2xl p-4 flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-[#e30613]/20 border border-[#e30613]/40 flex items-center justify-center text-white font-bold text-sm">
-                  {staff.name.slice(0, 1)}
+                  {staff.imgUrl ? <img src={staff.imgUrl} alt={staff.name} className="w-full h-full rounded-full object-cover"/> : staff.name.slice(0, 1)}
                 </div>
                 <div>
                   <h4 className="font-bold text-sm text-white">{staff.name}</h4>
-                  <p className="text-xs text-[#e30613] font-semibold">{staff.title}</p>
+                  <p className="text-xs text-[#e30613] font-semibold">{staff.role}</p>
                 </div>
               </div>
               <div className="text-left text-xs text-[#8c96aa]">
@@ -353,13 +224,14 @@ export const TeamTab: React.FC<TeamTabProps> = ({ onBack, onOpenMenu, onSelectPl
             <p className="text-xs text-[#8c96aa]">قيادة نادي الرجاء العراقي الرياضي</p>
           </div>
 
-          {boardManagement.map((leader, i) => (
+          {!boardManagement.length&&<p className="text-center text-sm text-[#8c96aa]">لا يوجد أعضاء منشورون حاليًا.</p>}
+          {boardManagement.map((leader) => (
             <div
-              key={i}
+              key={leader.id}
               className="bg-[#121c2e] border border-white/5 rounded-2xl p-4 flex items-center gap-3.5"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d4af37]/20 border border-[#d4af37]/40 flex items-center justify-center text-[#d4af37]">
-                <i className="fa-solid fa-crown text-sm"></i>
+                {leader.imgUrl ? <img src={leader.imgUrl} alt={leader.name} className="w-full h-full rounded-xl object-cover"/> : <i className="fa-solid fa-crown text-sm"></i>}
               </div>
               <div>
                 <span className="text-[11px] text-[#8c96aa] block font-semibold">{leader.role}</span>

@@ -1,0 +1,116 @@
+[
+  {
+    "title": "نادي الرجاء العراقي الرياضي",
+    "category": "about",
+    "description": "نادي الرجاء العراقي صرح رياضي رائد يجمع بين التفوق في المنافسات وبناء أجيال من الرياضيين المتميزين بالروح العالية والانضباط.\nاللقب: فرسان الرافدين\nالألوان: الأحمر والأسود والأبيض\nالملعب: ملعب الشعب الدولي"
+  },
+  {
+    "title": "دوري المحترفين",
+    "category": "trophies",
+    "description": "4 ألقاب",
+    "date": "1999, 2001, 2005, 2010"
+  },
+  {
+    "title": "كأس رئيس الدولة",
+    "category": "trophies",
+    "description": "2 ألقاب",
+    "date": "2000, 2017"
+  },
+  {
+    "title": "كأس السوبر",
+    "category": "trophies",
+    "description": "3 ألقاب",
+    "date": "2002, 2011, 2018"
+  },
+  {
+    "title": "كأس الرابطة للمحترفين",
+    "category": "trophies",
+    "description": "2 ألقاب",
+    "date": "2016, 2018"
+  },
+  {
+    "title": "الانتصارات",
+    "category": "stats",
+    "description": "14 فوز"
+  },
+  {
+    "title": "الأهداف المسجلة",
+    "category": "stats",
+    "description": "41 هدف"
+  },
+  {
+    "title": "الشباك النظيفة",
+    "category": "stats",
+    "description": "7 مباريات"
+  },
+  {
+    "title": "نسبة الاستحواذ",
+    "category": "stats",
+    "description": "58.4%"
+  },
+  {
+    "title": "فئة الأشبال · أكاديمية نادي الرجاء العراقي",
+    "category": "academyBanner",
+    "teamCategory": "cubs",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80",
+    "coach": "كابتن أحمد الحمادي (AFC A)",
+    "trainingDays": "الأحد والثلاثاء والخميس · 4:30 عصراً",
+    "description": "مدرسة المواهب والبراعم الواعدة لمستقبل الكرة العراقية"
+  },
+  {
+    "title": "فئة الناشئين · أبطال دوري الفئات",
+    "category": "academyBanner",
+    "teamCategory": "juniors",
+    "image": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=800&q=80",
+    "coach": "كابتن مارك فان دير بيلت (UEFA Pro)",
+    "trainingDays": "السبت والإثنين والأربعاء · 5:00 مساءً",
+    "description": "صقل المهارات التكتيكية والبدنية للمنافسة على البطولات الرسمية"
+  },
+  {
+    "title": "فريق الشباب · الرافد المباشر للفريق الأول",
+    "category": "academyBanner",
+    "teamCategory": "youth",
+    "image": "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=800&q=80",
+    "coach": "كابتن رافد سالم السعدي (AFC Pro)",
+    "trainingDays": "يومياً عدا الجمعة · 6:00 مساءً",
+    "description": "مستوى احترافي عالي وتأهيل مباشر لتمثيل الفريق الأول والمنتخبات"
+  },
+  {
+    "title": "الفريق الأول · فرسان الرافدين",
+    "category": "academyBanner",
+    "teamCategory": "first",
+    "image": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
+    "coach": "المدير الفني: كابتن حيدر محمود",
+    "trainingDays": "تمارين مكثفة على الملعب الرئيسي · 7:30 مساءً",
+    "description": "نجوم نادي الرجاء العراقي في الدوري الممتاز والمشاركات الرسمية"
+  },
+  {
+    "title": "اختبارات الأكاديمية لمواليد 2010",
+    "category": "academyNews",
+    "date": "2026/09/15",
+    "image": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=400&q=80",
+    "description": "تعلن إدارة أكاديمية نادي الرجاء العراقي عن انطلاق تجارب الأداء الفنية والبدنية للبراعم والناشئين مواليد 2010 على ملاعب النادي التدريبية تحت إشراف الطاقم الفني المعتمد."
+  },
+  {
+    "title": "نتائج مباريات فئة الناشئين",
+    "category": "academyNews",
+    "date": "2026/09/12",
+    "image": "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=400&q=80",
+    "description": "حقق فريق ناشئي نادي الرجاء العراقي فوزاً كبيراً بنتيجة 4-1 في قمة دوري الفئات العمرية بعد أداء تكتيكي مميز أشاد به مدربو قطاع المراحل السنية."
+  },
+  {
+    "title": "الأحد والثلاثاء (4:30 - 6:00 م)",
+    "category": "academyPrograms",
+    "description": "تطوير التحكم بالكرة، التمرير الدقيق، وبناء اللعب من الخلف للفئات السنية."
+  },
+  {
+    "title": "الإثنين والأربعاء (4:30 - 6:00 م)",
+    "category": "academyPrograms",
+    "description": "اللياقة البدنية، الرشاقة، والتسديد من مسافات مختلفة والمناورات التكتيكية."
+  },
+  {
+    "title": "الخميس (مباريات تطبيقية داخلية)",
+    "category": "academyPrograms",
+    "description": "تقييم الأداء التكتيكي ومراجعة الفيديو مع الطاقم الفني الهولندي المعتمد."
+  }
+]

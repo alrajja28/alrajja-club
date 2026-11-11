@@ -1,3 +1,4 @@
+import {useContent} from './backend/useContent';
 import React, { useState, useEffect } from 'react';
 import { useConvexAuth, useQuery } from 'convex/react';
 import { useClubAuthActions } from './backend/CustomerAuth';
@@ -21,7 +22,7 @@ import { NewsDetailModal } from './components/NewsDetailModal';
 import { SideDrawer } from './components/SideDrawer';
 import { LiveStreamModal } from './components/LiveStreamModal';
 import { BottomNav, NavTabId } from './components/BottomNav';
-import { Match, NewsItem, Product, UPCOMING_MATCH } from './data/clubData';
+import { Match, NewsItem, Product } from './data/clubData';
 
 export type AppScreenId =
   | 'splash-screen'
@@ -41,6 +42,8 @@ export type AppScreenId =
 export default function App() {
   const { isAuthenticated } = useConvexAuth();
   const { signOut } = useClubAuthActions();
+  const liveMatches=useContent<Match>('matches');
+  const nextTicketMatch=liveMatches.find(m=>m.status!=='finished'&&m.ticketSalesEnabled!==false)??null;
   const viewer = useQuery(clubApi.content.me, isAuthenticated ? {} : 'skip');
   // 1. نظام التوجيه (Navigation System) وسجل الشاشات لزر الرجوع
   const [currentScreen, setCurrentScreen] = useState<AppScreenId>('splash-screen');
@@ -211,7 +214,7 @@ export default function App() {
           {currentScreen === 'home-screen' && (
             <HomeTab
               onOpenTickets={(m) => {
-                setSelectedTicketMatch(m || UPCOMING_MATCH);
+                setSelectedTicketMatch(m || nextTicketMatch);
                 switchScreen('tickets-screen');
               }}
               onOpenStore={() => switchScreen('store-screen')}
@@ -236,7 +239,7 @@ export default function App() {
           {currentScreen === 'matches-screen' && (
             <MatchesTab
               onOpenTickets={(m) => {
-                setSelectedTicketMatch(m || UPCOMING_MATCH);
+                setSelectedTicketMatch(m || nextTicketMatch);
                 switchScreen('tickets-screen');
               }}
               onBack={goBack}
@@ -277,7 +280,7 @@ export default function App() {
           {/* SCREEN 9: Tickets Screen (الكليشة 9) */}
           {currentScreen === 'tickets-screen' && (
             <TicketsScreen
-              match={selectedTicketMatch || UPCOMING_MATCH}
+              match={selectedTicketMatch}
               onBack={goBack}
               onOpenMenu={() => setIsMenuOpen(true)}
               onSuccessBooking={(newTicket) => {
@@ -316,7 +319,7 @@ export default function App() {
               onOpenProfile={() => switchScreen('profile-screen')}
               onOpenAnthem={() => setIsAnthemOpen(true)}
               onOpenTickets={() => {
-                setSelectedTicketMatch(UPCOMING_MATCH);
+                setSelectedTicketMatch(nextTicketMatch);
                 switchScreen('tickets-screen');
               }}
               onOpenAcademy={() => switchScreen('academy-screen')}
@@ -398,7 +401,7 @@ export default function App() {
         }}
         onOpenTickets={() => {
           setIsMenuOpen(false);
-          setSelectedTicketMatch(UPCOMING_MATCH);
+          setSelectedTicketMatch(nextTicketMatch);
           switchScreen('tickets-screen');
         }}
         onOpenProfile={() => {

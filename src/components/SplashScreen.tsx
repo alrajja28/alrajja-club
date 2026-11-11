@@ -1,3 +1,4 @@
+import {ClubName} from './ClubName';
 import React from 'react';
 import { LionLogo } from './LionLogo';
 import { ArrowLeft, Sparkles } from 'lucide-react';
@@ -46,7 +47,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart, onExploreGu
 
         {/* Club Brand Title */}
         <h1 className="text-3xl font-black text-white mt-5 tracking-wide drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-          نادي الرجاء العراقي
+          <ClubName/>
         </h1>
       </div>
 

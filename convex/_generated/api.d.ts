@@ -17,6 +17,7 @@ import type * as identity from "../identity.js";
 import type * as model from "../model.js";
 import type * as permissions from "../permissions.js";
 import type * as submissions from "../submissions.js";
+import type * as tickets from "../tickets.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   model: typeof model;
   permissions: typeof permissions;
   submissions: typeof submissions;
+  tickets: typeof tickets;
 }>;
 
 /**

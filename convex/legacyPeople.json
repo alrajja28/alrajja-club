@@ -1,0 +1,91 @@
+{
+  "staff": [
+    {
+      "name": "غوران توميتش",
+      "nationality": "كرواتيا",
+      "experience": "15 سنة",
+      "role": "المدير الفني",
+      "scope": "first"
+    },
+    {
+      "name": "كريم البصري",
+      "nationality": "العراق",
+      "experience": "10 سنوات",
+      "role": "مساعد المدرب",
+      "scope": "first"
+    },
+    {
+      "name": "ماركو بيريز",
+      "nationality": "إسبانيا",
+      "experience": "12 سنة",
+      "role": "مدرب الحراس",
+      "scope": "first"
+    },
+    {
+      "name": "جيروم ديبوا",
+      "nationality": "فرنسا",
+      "experience": "8 سنوات",
+      "role": "المعد البدني",
+      "scope": "first"
+    },
+    {
+      "name": "د. حسام السعدي",
+      "nationality": "العراق",
+      "experience": "14 سنة",
+      "role": "طبيب الفريق",
+      "scope": "first"
+    },
+    {
+      "name": "كابتن مارك فان دير بيلت",
+      "role": "المدير الفني لقطاع الفئات والناشئين",
+      "license": "UEFA Pro",
+      "scope": "academy"
+    },
+    {
+      "name": "كابتن أحمد الحمادي",
+      "role": "مدرب فئة الأشبال والبراعم",
+      "license": "AFC A",
+      "scope": "academy"
+    },
+    {
+      "name": "كابتن رافد سالم السعدي",
+      "role": "مدرب فريق الشباب",
+      "license": "AFC Pro",
+      "scope": "academy"
+    },
+    {
+      "name": "كابتن كارلوس سيلفا",
+      "role": "مدرب حراس المرمى لفرق الفئات",
+      "license": "FIFA Goalkeeping",
+      "scope": "academy"
+    },
+    {
+      "name": "د. يوسف النعيمي",
+      "role": "أخصائي الإعداد البدني والتغذية",
+      "license": "Ph.D Sports Science",
+      "scope": "academy"
+    }
+  ],
+  "management": [
+    {
+      "role": "رئيس مجلس الإدارة",
+      "name": "الشيخ ذياب بن زايد آل نهيان"
+    },
+    {
+      "role": "نائب الرئيس",
+      "name": "سعادة راشد الزعابي"
+    },
+    {
+      "role": "المدير التنفيذي للشركة الرياضية",
+      "name": "خالد السركال"
+    },
+    {
+      "role": "مدير شؤون الاحتراف",
+      "name": "فهد مسعود"
+    },
+    {
+      "role": "المشرف العام على الفريق",
+      "name": "عبدالباسط محمد"
+    }
+  ]
+}

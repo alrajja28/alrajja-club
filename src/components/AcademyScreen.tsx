@@ -1,3 +1,4 @@
+import {ManagedCards} from './ManagedCards';
 import React, { useRef, useState } from 'react';
 import { useContent } from '../backend/useContent';
 import {usePlayerCategories} from '../backend/usePlayerCategories';
@@ -54,9 +55,8 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
   const handleCategoryChange=(slug:string)=>{setSelectedCategory(slug);setActiveSubFilter('all');};
   const categoryPlayers=players.filter(p=>(p.teamCategory??'first')===activeMainTab).map(p=>toAcademyPlayer(p,activeCategory?.title??''));
   const filteredPlayers=categoryPlayers.filter(p=>activeSubFilter==='all'||(activeMainTab==='first'?p.posGroup===activeSubFilter:p.subCategory===activeSubFilter));
-  const bannerKey:Record<string,keyof typeof ACADEMY_BANNER_INFO>={first:'اول',youth:'شباب',juniors:'ناشئين',cubs:'اشبال'};
-  const baseBanner=ACADEMY_BANNER_INFO[bannerKey[activeMainTab]??'اشبال'];
-  const bannerInfo={...baseBanner,...(!bannerKey[activeMainTab]?{subtitle:'لاعبو هذه الفئة من بيانات إدارة النادي',coach:'',trainingDays:''}:{}),title:(activeCategory?.title??'فئات النادي')+' · نادي الرجاء العراقي'};
+  const pages=useContent<any>('pages');
+  const bannerInfo={title:(activeCategory?.title??'فئات النادي'),subtitle:'',image:'',coach:'',trainingDays:'',...pages.find(p=>p.category==='academyBanner'&&p.teamCategory===activeMainTab)};
   const subFilters=activeMainTab==='first'?ACADEMY_SUB_FILTERS.اول:[{id:'all',label:'كل المواليد'},...Array.from(new Set(categoryPlayers.map(p=>p.birthYear).filter(Boolean))).sort().reverse().map(year=>({id:year,label:'مواليد '+year}))];
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -116,7 +116,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
         {/* البانر التفاعلي لكل فئة */}
         <div className="academy-banner relative rounded-2xl overflow-hidden mb-4 shadow-lg">
           <img
-            src={bannerInfo.image}
+            src={bannerInfo.image||`${import.meta.env.BASE_URL}rajaa-logo.png`}
             alt={bannerInfo.title}
             className="w-full h-36 object-cover"
           />
@@ -128,7 +128,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
               {bannerInfo.title}
             </h2>
             <p className="text-[11px] text-[#8c96aa] mt-0.5 line-clamp-1">
-              {bannerInfo.subtitle}
+              {bannerInfo.description}
             </p>
             <div className="mt-2 flex items-center justify-between text-[10px] text-white/80 border-t border-white/10 pt-1.5">
               <span className="flex items-center gap-1 text-[#ffd700]">
@@ -265,79 +265,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
           أخبار فئات الأكاديمية
         </div>
 
-        <div className="academy-news-list">
-          {/* خبر 1 */}
-          <div
-            className="a-news-card cursor-pointer"
-            onClick={() => {
-              setSelectedNews({
-                title: 'اختبارات الأكاديمية لمواليد 2010',
-                date: '2026/09/15',
-                image:
-                  'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=400&q=80',
-                content:
-                  'تعلن إدارة أكاديمية نادي الرجاء العراقي عن انطلاق تجارب الأداء الفنية والبدنية للبراعم والناشئين مواليد 2010 على ملاعب النادي التدريبية تحت إشراف الطاقم الفني المعتمد.',
-              });
-              setActiveModal('news');
-            }}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=400&q=80"
-              alt="اختبارات الأكاديمية"
-              className="a-news-img"
-            />
-            <div className="a-news-details">
-              <h4 className="a-news-title">اختبارات الأكاديمية لمواليد 2010</h4>
-              <div className="a-news-meta">
-                <span className="a-news-date">2026/09/15</span>
-                <div className="a-news-stats">
-                  <span>
-                    <i className="fa-regular fa-eye"></i> 1.2K
-                  </span>
-                  <span>
-                    <i className="fa-regular fa-heart"></i> 120
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* خبر 2 */}
-          <div
-            className="a-news-card cursor-pointer"
-            onClick={() => {
-              setSelectedNews({
-                title: 'نتائج مباريات فئة الناشئين',
-                date: '2026/09/12',
-                image:
-                  'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=400&q=80',
-                content:
-                  'حقق فريق ناشئي نادي الرجاء العراقي فوزاً كبيراً بنتيجة 4-1 في قمة دوري الفئات العمرية بعد أداء تكتيكي مميز أشاد به مدربو قطاع المراحل السنية.',
-              });
-              setActiveModal('news');
-            }}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=400&q=80"
-              alt="نتائج مباريات"
-              className="a-news-img"
-            />
-            <div className="a-news-details">
-              <h4 className="a-news-title">نتائج مباريات فئة الناشئين</h4>
-              <div className="a-news-meta">
-                <span className="a-news-date">2026/09/12</span>
-                <div className="a-news-stats">
-                  <span>
-                    <i className="fa-regular fa-eye"></i> 850
-                  </span>
-                  <span>
-                    <i className="fa-regular fa-heart"></i> 95
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div className="academy-news-list"><ManagedCards category="academyNews"/></div>
       </div>
 
       {/* ================= نافذة تفاصيل اللاعب (Player Card Modal) ================= */}
@@ -501,12 +429,7 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
                       onChange={(e) => setRegForm({ ...regForm, birthYear: e.target.value })}
                       className="w-full bg-[#121c2e] border border-white/10 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#e30613]"
                     >
-                      <option value="2013">2013 (الأشبال)</option>
-                      <option value="2012">2012 (الأشبال)</option>
-                      <option value="2011">2011 (الأشبال)</option>
-                      <option value="2010">2010 (الناشئين)</option>
-                      <option value="2009">2009 (الناشئين)</option>
-                      <option value="2006">2006 (الشباب)</option>
+                      {Array.from({length:30},(_,i)=>new Date().getFullYear()-i).map(year=><option key={year} value={year}>{year}</option>)}
                     </select>
                   </div>
 
@@ -554,170 +477,13 @@ export const AcademyScreen: React.FC<AcademyScreenProps> = ({ onBack, onOpenMenu
       )}
 
       {/* نافذة المدربين */}
-      {activeModal === 'coaches' && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-sm bg-[#0a1120] border border-white/10 rounded-3xl p-5 text-right text-white relative shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <i className="fa-solid fa-user-tie text-[#ffd700]"></i>
-                <h3 className="font-bold text-sm text-white">
-                  الكادر الفني لأكاديمية نادي الرجاء العراقي
-                </h3>
-              </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-[#8c96aa] hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-              {[
-                {
-                  name: 'كابتن مارك فان دير بيلت',
-                  role: 'المدير الفني لقطاع الفئات والناشئين',
-                  license: 'UEFA Pro',
-                },
-                {
-                  name: 'كابتن أحمد الحمادي',
-                  role: 'مدرب فئة الأشبال والبراعم',
-                  license: 'AFC A',
-                },
-                {
-                  name: 'كابتن رافد سالم السعدي',
-                  role: 'مدرب فريق الشباب',
-                  license: 'AFC Pro',
-                },
-                {
-                  name: 'كابتن كارلوس سيلفا',
-                  role: 'مدرب حراس المرمى لفرق الفئات',
-                  license: 'FIFA Goalkeeping',
-                },
-                {
-                  name: 'د. يوسف النعيمي',
-                  role: 'أخصائي الإعداد البدني والتغذية',
-                  license: 'Ph.D Sports Science',
-                },
-              ].map((c, i) => (
-                <div
-                  key={i}
-                  className="bg-[#121c2e] p-3 rounded-2xl border border-white/5 flex items-center justify-between"
-                >
-                  <div>
-                    <h5 className="font-bold text-xs text-white">{c.name}</h5>
-                    <p className="text-[11px] text-[#8c96aa]">{c.role}</p>
-                  </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-[#ffd700] border border-white/10">
-                    {c.license}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {activeModal === 'coaches' && <div className="fixed inset-0 z-100 bg-black/85 flex items-center justify-center p-4"><section className="bg-[#0a1120] rounded-3xl p-5 w-full max-w-sm max-h-[85vh] overflow-y-auto"><button className="mb-4" onClick={()=>setActiveModal(null)}>إغلاق</button><ManagedCards section="staff" scope="academy"/></section></div>}
 
       {/* نافذة جداول المباريات */}
-      {activeModal === 'fixtures' && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-sm bg-[#0a1120] border border-white/10 rounded-3xl p-5 text-right text-white relative shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <i className="fa-regular fa-calendar-days text-[#38bdf8]"></i>
-                <h3 className="font-bold text-sm text-white">
-                  جدول مباريات فرق نادي الرجاء العراقي
-                </h3>
-              </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-[#8c96aa] hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {[
-                {
-                  comp: 'دوري الأشبال تحت 14 سنة',
-                  match: 'الرجاء العراقي vs الزوراء',
-                  date: 'السبت 3 أكتوبر · 4:30 م',
-                  ground: 'ملعب النادي الفرعي 1',
-                },
-                {
-                  comp: 'دوري الناشئين تحت 17 سنة',
-                  match: 'الرجاء العراقي vs القوة الجوية',
-                  date: 'الأحد 4 أكتوبر · 5:15 م',
-                  ground: 'ملعب الشعب الدولي (الفرعي)',
-                },
-                {
-                  comp: 'دوري الشباب تحت 20 سنة',
-                  match: 'الرجاء العراقي vs الشرطة',
-                  date: 'الثلاثاء 6 أكتوبر · 4:00 م',
-                  ground: 'ملعب أكاديمية الرجاء',
-                },
-              ].map((f, i) => (
-                <div key={i} className="bg-[#121c2e] p-3 rounded-2xl border border-white/5 space-y-1">
-                  <div className="flex justify-between text-[10px] text-[#ffd700]">
-                    <span>{f.comp}</span>
-                    <span className="text-[#8c96aa]">{f.ground}</span>
-                  </div>
-                  <div className="font-bold text-xs text-white">{f.match}</div>
-                  <div className="text-[11px] text-[#8c96aa]">{f.date}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {activeModal === 'fixtures' && <div className="fixed inset-0 z-100 bg-black/85 flex items-center justify-center p-4"><section className="bg-[#0a1120] rounded-3xl p-5 w-full max-w-sm max-h-[85vh] overflow-y-auto"><button className="mb-4" onClick={()=>setActiveModal(null)}>إغلاق</button><ManagedCards section="matches"/></section></div>}
 
       {/* نافذة البرامج التدريبية */}
-      {activeModal === 'programs' && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-sm bg-[#0a1120] border border-white/10 rounded-3xl p-5 text-right text-white relative shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <i className="fa-solid fa-clipboard-list text-emerald-400"></i>
-                <h3 className="font-bold text-sm text-white">البرنامج التدريبي الأسبوعي</h3>
-              </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-[#8c96aa] hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-2 text-xs">
-              <div className="bg-[#121c2e] p-3 rounded-2xl border border-white/5">
-                <span className="font-bold text-emerald-400 block mb-1">
-                  الأحد والثلاثاء (4:30 - 6:00 م)
-                </span>
-                <p className="text-[#8c96aa] text-[11px]">
-                  تطوير التحكم بالكرة، التمرير الدقيق، وبناء اللعب من الخلف للفئات السنية.
-                </p>
-              </div>
-              <div className="bg-[#121c2e] p-3 rounded-2xl border border-white/5">
-                <span className="font-bold text-emerald-400 block mb-1">
-                  الإثنين والأربعاء (4:30 - 6:00 م)
-                </span>
-                <p className="text-[#8c96aa] text-[11px]">
-                  اللياقة البدنية، الرشاقة، والتسديد من مسافات مختلفة والمناورات التكتيكية.
-                </p>
-              </div>
-              <div className="bg-[#121c2e] p-3 rounded-2xl border border-white/5">
-                <span className="font-bold text-emerald-400 block mb-1">
-                  الخميس (مباريات تطبيقية داخلية)
-                </span>
-                <p className="text-[#8c96aa] text-[11px]">
-                  تقييم الأداء التكتيكي ومراجعة الفيديو مع الطاقم الفني الهولندي المعتمد.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeModal === 'programs' && <div className="fixed inset-0 z-100 bg-black/85 flex items-center justify-center p-4"><section className="bg-[#0a1120] rounded-3xl p-5 w-full max-w-sm max-h-[85vh] overflow-y-auto"><button className="mb-4" onClick={()=>setActiveModal(null)}>إغلاق</button><><ManagedCards section="academy"/><ManagedCards category="academyPrograms"/></></section></div>}
 
       {/* نافذة تفاصيل الخبر */}
       {activeModal === 'news' && selectedNews && (

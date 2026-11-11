@@ -2,6 +2,7 @@ export interface Match {
   id: string;
   opponent: string;
   opponentLogoText: string;
+  opponentLogo?:string;
   competition: string;
   stadium: string;
   date: string;
@@ -11,6 +12,8 @@ export interface Match {
   score?: { wahda: number; opponent: number };
   scorers?: string[];
   ticketPrice: number;
+  ticketPrices?: Record<'vip'|'first'|'second'|'third',number>;
+  ticketSalesEnabled?: boolean;
 }
 
 export interface NewsItem {
