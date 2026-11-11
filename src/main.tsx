@@ -1,3 +1,4 @@
+import './pwa/installPromptStore';
 import {createRoot} from 'react-dom/client';
 import {MAINTENANCE_ENABLED} from './maintenance-config';
 
